@@ -1,0 +1,34 @@
+{
+  "cSpell.userWords": [], // only use words from .cspell.json
+  "cSpell.enabled": true,
+  "editor.formatOnSave": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "cSpell.words": [
+    "abcdefghijklmnopqrstuv",
+    "ATCG",
+    "BDFGHJLMNPQRT",
+    "bdfghjmnpqrt",
+    "bitauth",
+    "codecov",
+    "dingodog",
+    "dingosky",
+    "dîngøsky",
+    "dingoskyme",
+    "FFTFTTFFTFTTFFTT",
+    "GACGGTCG",
+    "insgkskn",
+    "JMGP",
+    "kiyooodd",
+    "Knoxen",
+    "lcov",
+    "libauth",
+    "prng",
+    "Puid",
+    "QBHU",
+    "qbhujm",
+    "TTACCCAC",
+    "TTTTTFTTFFFFFTFF",
+    "UFLYN"
+  ]
+}
