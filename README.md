@@ -3,7 +3,7 @@
 Simple, flexible and efficient generation of probably unique identifiers (`puid`, aka random strings) of intuitively specified entropy using pre-defined or custom characters.
 
 ```js
-  const { puid } = require('puid-js')
+  const { Chars, puid } = require('puid-js')
 
   const { generator: randId } = puid({ chars: Chars.Alpha, total: 1e5, risk: 1e12 })
   randId()
