@@ -250,13 +250,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bitauth/libauth@npm:^1.17.1":
-  version: 1.19.1
-  resolution: "@bitauth/libauth@npm:1.19.1"
-  checksum: d6f1ed0aaa36014529eb7e095a96644f8d06ec5f80f223b74d30414a19e2516a194d165d90fee09a96ed51d3bff6d80406b3ecaff194489579dbea4ae1c9f93c
-  languageName: node
-  linkType: hard
-
 "@commitlint/config-validator@npm:^17.0.3":
   version: 17.0.3
   resolution: "@commitlint/config-validator@npm:17.0.3"
@@ -6111,7 +6104,6 @@ __metadata:
   resolution: "puid-js@workspace:."
   dependencies:
     "@ava/typescript": ^1.1.1
-    "@bitauth/libauth": ^1.17.1
     "@istanbuljs/nyc-config-typescript": ^1.0.1
     "@typescript-eslint/eslint-plugin": ^4.0.1
     "@typescript-eslint/parser": ^4.0.1

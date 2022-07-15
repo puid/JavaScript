@@ -81,7 +81,7 @@ const entropyBits = (total: Total, risk: Risk): number => {
 const entropyBitsPerChar = (chars: string): number => log2(chars.length)
 
 /**
- * Bits necessary to have an ID of length `len` using characters `chars`
+ * Bits necessary for a `puid` of length `len` using characters `chars`
  *
  * ### Example (es module)
  * ```js
