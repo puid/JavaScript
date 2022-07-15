@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.2 (2022-07-15)
+
+### Documentation
+ - Update npm package keywords
+
 ## v1.0.1 (2022-07-15)
 
 ### Fix
