@@ -42,23 +42,20 @@ const bitShifts = (chars: string): BitShifts => {
 
   if (isPow2(chars.length)) return [baseBitShift]
 
-  const zeroBitShifts = new Array(nBitsPerChar)
-    .fill(null)
-    .reduce((acc, _n, ndx) => {
-      acc.push(ndx)
-      return acc
-    }, [])
-    .slice(2)
-    .reverse()
-    .reduce((shifts: BitShifts, bit: number) => {
-      if (isBitZero(chars.length, bit)) {
-        const shift: BitShift = [chars.length | (pow2(bit) - 1), nBitsPerChar - bit + 1]
-        return shifts.concat([shift])
-      }
-      return shifts
-    }, [])
-  zeroBitShifts.push(baseBitShift)
-  return zeroBitShifts.reverse()
+  return new Array(nBitsPerChar)
+  .fill(null)
+  .reduce((acc, _n, ndx) => {
+    acc.push(ndx)
+    return acc
+  }, [])
+  .slice(2)
+  .reduce((shifts: BitShifts, bit: number) => {
+    if (isBitZero(chars.length, bit)) {
+      const shift: BitShift = [chars.length | pow2(bit) - 1, nBitsPerChar - bit + 1]
+      return shifts.concat([shift])
+    }
+    return shifts
+  }, [baseBitShift])
 }
 
 const valueAt = (lOffset: number, nBits: number, puidBytes: PuidBytes): number => {

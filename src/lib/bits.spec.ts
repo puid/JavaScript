@@ -11,6 +11,13 @@ test('Chars.Safe32', (t) => t.deepEqual(bitShifts(Chars.Safe32), [[32, 5]]))
 
 test('Chars.AlphaNum', (t) => t.deepEqual(bitShifts(Chars.AlphaNum), [[62, 6]]))
 
+test('Chars.Alpha', (t) =>
+  t.deepEqual(bitShifts(Chars.Alpha), [
+    [ 52, 6 ],
+    [ 55, 5 ],
+    [ 63, 3 ]
+   ]))
+
 test('Chars.AlphaLower', (t) =>
   t.deepEqual(bitShifts(Chars.AlphaLower), [
     [26, 5],
@@ -31,5 +38,3 @@ test('Chars.SafeAscii', (t) =>
     [95, 5],
     [127, 2]
   ]))
-
-// test('Chars.AlphaNumLower', (t) => t.deepEqual(bitShifts(Chars.AlphaNumLower), [[62, 6]]))
