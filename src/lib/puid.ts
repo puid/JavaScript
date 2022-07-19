@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+import crypto from 'crypto'
+
 import muncher from './bits'
 import { Chars, charsName, validChars } from './chars'
 import { entropyBits, entropyBitsPerChar } from './entropy'
@@ -27,6 +29,17 @@ import { entropyBits, entropyBitsPerChar } from './entropy'
 const round2 = (f: number): number => round(f * 100) / 100
 
 const { ceil, round } = Math
+
+const selectEntropyFunction = (puidConfig: PuidConfig): EntropyFunction => {
+  if (puidConfig.entropyValues) {
+    return [true, puidConfig.entropyValues as EntropyByValues]
+  } else if (puidConfig.entropyBytes) {
+    return [false, puidConfig.entropyBytes as EntropyByBytes]
+  } else {
+    return [false, crypto.randomBytes]
+    // [true, crypto.getRandomValues]
+  }
+}
 
 /**
  * Create `puid` generating function
@@ -88,6 +101,10 @@ export default (puidConfig: PuidConfig = {}): PuidResult => {
   if (!puidConfig.total && puidConfig.risk) return { error: new Error('Total and risk must be specified together') }
   if (puidConfig.total && puidConfig.bits) return { error: new Error('Cannot specify both total/risk and bits') }
 
+  if (puidConfig.entropyBytes && puidConfig.entropyValues) {
+    return { error: new Error('Cannot specify both entropyBytes and entropyValues functions') }
+  }
+
   const puidEntropyBits =
     puidConfig.total && puidConfig.risk
       ? entropyBits(puidConfig.total, puidConfig.risk)
@@ -96,7 +113,7 @@ export default (puidConfig: PuidConfig = {}): PuidResult => {
   const puidLen = round(ceil(puidEntropyBits / puidBitsPerChar))
   const ere = (puidBitsPerChar * puidChars.length) / (8 * Buffer.byteLength(puidChars))
 
-  const { error: bitsMuncherError, success: bitsMuncher } = muncher(puidLen, puidChars, puidConfig)
+  const { error: bitsMuncherError, success: bitsMuncher } = muncher(puidLen, puidChars, selectEntropyFunction(puidConfig))
   if (bitsMuncherError) return { error: bitsMuncherError }
 
   const puid: Puid = (): string => bitsMuncher()

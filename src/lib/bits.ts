@@ -19,8 +19,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-import crypto from 'crypto'
-
 import encoder from './encoder'
 import { entropyBitsPerChar } from './entropy'
 
@@ -140,22 +138,7 @@ const fillEntropy = (entropyBits: EntropyBits, entropyFunction: EntropyFunction)
   }
 }
 
-const selectEntropyFunction = (puidConfig: PuidConfig): EntropyFunction => {
-  if (puidConfig.entropyValues) {
-    return [true, puidConfig.entropyValues as EntropyByValues]
-  } else if (puidConfig.entropyBytes) {
-    return [false, puidConfig.entropyBytes as EntropyByBytes]
-  } else {
-    return [false, crypto.randomBytes]
-    // [true, crypto.getRandomValues]
-  }
-}
-
-export default (puidLen: number, puidChars: string, puidConfig: PuidConfig): PuidBitsMuncherResult => {
-  if (puidConfig.entropyBytes && puidConfig.entropyValues) {
-    return { error: new Error('Cannot specify both entropyBytes and entropyValues functions') }
-  }
-
+export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunction): PuidBitsMuncherResult => {
   const nBitsPerChar = bitsPerChar(puidChars)
   const nBitsPerPuid = nBitsPerChar * puidLen
   const nBytesPerPuid = ceil(nBitsPerPuid / 8)
@@ -164,12 +147,13 @@ export default (puidLen: number, puidChars: string, puidConfig: PuidConfig): Pui
   const entropyBuffer = new ArrayBuffer(bufferLen)
   const entropyBits: EntropyBits = [8 * bufferLen, entropyBuffer]
   const entropyBytes = new Uint8Array(entropyBuffer)
-  const entropyFunction = selectEntropyFunction(puidConfig)
 
   const charsEncoder = encoder(puidChars)
   const puidEncoded = (value: number) => String.fromCharCode(charsEncoder(value))
 
-  if (isPow2(puidChars.length)) {
+  const nChars = puidChars.length
+  
+  if (isPow2(nChars)) {
     // When chars count is a power of 2, sliced bits always yield a valid char
     const mapper = new Array(puidLen).fill(0).map((zero, ndx) => zero + ndx)
 
@@ -187,7 +171,7 @@ export default (puidLen: number, puidChars: string, puidConfig: PuidConfig): Pui
     return { success: bitsMuncher }
   }
 
-  const nChars = puidChars.length
+  
   const nEntropyBits = 8 * entropyBytes.length
   const puidShifts = bitShifts(puidChars)
 
