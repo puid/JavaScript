@@ -41,19 +41,22 @@ const bitShifts = (chars: string): BitShifts => {
   if (isPow2(chars.length)) return [baseBitShift]
 
   return new Array(nBitsPerChar)
-  .fill(null)
-  .reduce((acc, _n, ndx) => {
-    acc.push(ndx)
-    return acc
-  }, [])
-  .slice(2)
-  .reduce((shifts: BitShifts, bit: number) => {
-    if (isBitZero(chars.length, bit)) {
-      const shift: BitShift = [chars.length | pow2(bit) - 1, nBitsPerChar - bit + 1]
-      return shifts.concat([shift])
-    }
-    return shifts
-  }, [baseBitShift])
+    .fill(null)
+    .reduce((acc, _n, ndx) => {
+      acc.push(ndx)
+      return acc
+    }, [])
+    .slice(2)
+    .reduce(
+      (shifts: BitShifts, bit: number) => {
+        if (isBitZero(chars.length, bit)) {
+          const shift: BitShift = [chars.length | (pow2(bit) - 1), nBitsPerChar - bit + 1]
+          return shifts.concat([shift])
+        }
+        return shifts
+      },
+      [baseBitShift]
+    )
 }
 
 const valueAt = (lOffset: number, nBits: number, puidBytes: PuidBytes): number => {
@@ -149,29 +152,25 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
   const entropyBytes = new Uint8Array(entropyBuffer)
 
   const charsEncoder = encoder(puidChars)
-  const puidEncoded = (value: number) => String.fromCharCode(charsEncoder(value))
-
   const nChars = puidChars.length
-  
+  const mapper = new Array(puidLen).fill(0).map((zero, ndx) => zero + ndx)
+
   if (isPow2(nChars)) {
     // When chars count is a power of 2, sliced bits always yield a valid char
-    const mapper = new Array(puidLen).fill(0).map((zero, ndx) => zero + ndx)
-
     const bitsMuncher = () => {
       fillEntropy(entropyBits, entropyFunction)
       const entropyOffset = entropyBits[0]
       // eslint-disable-next-line functional/immutable-data
       entropyBits[0] = entropyOffset + nBitsPerPuid
-      return mapper.reduce((puid: string, ndx: number) => {
-        const value = valueAt(entropyOffset + ndx * nBitsPerChar, nBitsPerChar, entropyBytes)
-        return puid + puidEncoded(value)
-      }, '')
+      const codes = mapper.map((ndx: number) =>
+        charsEncoder(valueAt(entropyOffset + ndx * nBitsPerChar, nBitsPerChar, entropyBytes))
+      )
+      return String.fromCharCode(...codes)
     }
 
     return { success: bitsMuncher }
   }
 
-  
   const nEntropyBits = 8 * entropyBytes.length
   const puidShifts = bitShifts(puidChars)
 
@@ -184,26 +183,26 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
     return [false, shift || nBitsPerChar]
   }
 
-  const sliceBits = (puid: string): string => {
-    if (puid.length === puidLen) {
-      // End recursion
-      return puid
-    }
-
+  const sliceValue = () => {
     if (nEntropyBits < entropyBits[0] + nBitsPerChar) {
       fillEntropy(entropyBits, entropyFunction)
     }
 
     const slicedValue = valueAt(entropyBits[0], nBitsPerChar, entropyBytes)
-
     const [accept, shift] = acceptValue(slicedValue)
     // eslint-disable-next-line functional/immutable-data
     entropyBits[0] += shift
 
-    return sliceBits(accept ? puid + puidEncoded(slicedValue) : puid)
+    if (accept) {
+      return charsEncoder(slicedValue)
+    }
+    return sliceValue()
   }
 
-  const bitsMuncher = () => sliceBits('')
+  const bitsMuncher = () => {
+    const codes = mapper.map(() => sliceValue())
+    return String.fromCharCode(...codes)
+  }
 
   return { success: bitsMuncher }
 }
