@@ -31,11 +31,6 @@ import safe32Encoder from './encoder/safe32'
 import safe64Encoder from './encoder/safe64'
 import safeAsciiEncoder from './encoder/safeAscii'
 
-export const customCharsEncoder = (chars: string): PuidEncoder => {
-  const charCodes = chars.split('').map((c) => c.charCodeAt(0))
-  return (n: number) => charCodes[n]
-}
-
 export default (chars: string): PuidEncoder => {
   if (chars === Chars.Alpha) return alphaEncoder()
   if (chars === Chars.AlphaLower) return alphaCaseEncoder()
