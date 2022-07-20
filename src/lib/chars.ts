@@ -38,7 +38,8 @@ export enum Chars {
   HexUpper = '0123456789ABCDEF',
   SafeAscii = '!#$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_abcdefghijklmnopqrstuvwxyz{|}~',
   Safe32 = '2346789bdfghjmnpqrtBDFGHJLMNPQRT',
-  Safe64 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'
+  Safe64 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_',
+  Symbol = '!#$%&()*+,-./:;<=>?@[]^_{|}~'
 }
 
 export const charsName = (chars: string): string => {
@@ -54,6 +55,7 @@ export const charsName = (chars: string): string => {
   if (chars === Chars.Safe32) return 'safe32'
   if (chars === Chars.Safe64) return 'safe64'
   if (chars === Chars.SafeAscii) return 'safeAscii'
+  if (chars === Chars.Symbol) return 'symbol'
   return 'custom'
 }
 
