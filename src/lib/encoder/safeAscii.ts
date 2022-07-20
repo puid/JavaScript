@@ -22,16 +22,18 @@
 
 export default (): PuidEncoder => {
   const bang = '!'.charCodeAt(0)
-  const amperstand = '&'.charCodeAt(0) - 4
+  const ampersand = '&'.charCodeAt(0) - 4
   const openSquareBracket = '['.charCodeAt(0) - 56
   const underscore = '_'.charCodeAt(0) - 59
-  const tilda = '~'.charCodeAt(0) - 89
+  const a = 'a'.charCodeAt(0) - 60
+  const tilde = '~'.charCodeAt(0)
 
   return (n: number) => {
     if (n === 0) return bang
-    if (n < 5) return n + amperstand
+    if (n < 5) return n + ampersand
     if (n < 57) return n + openSquareBracket
     if (n < 60) return n + underscore
-    return n + tilda
+    if (n < 89) return n + a
+    return tilde
   }
 }
