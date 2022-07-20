@@ -31,20 +31,10 @@ import safe32Encoder from './encoder/safe32'
 import safe64Encoder from './encoder/safe64'
 import safeAsciiEncoder from './encoder/safeAscii'
 
-// const predefinedEncoding = (encoder: PuidEncoder) => (puidValues: PuidValues) => puidFromValues(puidValues, encoder)
-
-// const customEncoding = (chars: string): PuidEncoding => {
-//   const encoder = customCharsEncoder(chars)
-//   return (puidValues: PuidValues) => puidFromValues(puidValues, encoder)
-// }
-
 export const customCharsEncoder = (chars: string): PuidEncoder => {
   const charCodes = chars.split('').map((c) => c.charCodeAt(0))
   return (n: number) => charCodes[n]
 }
-
-// export const puidFromValues = (values: PuidValues, encoder: PuidEncoder): string =>
-//   String.fromCharCode(...values.map((v) => encoder(v)))
 
 export default (chars: string): PuidEncoder => {
   if (chars === Chars.Alpha) return alphaEncoder()

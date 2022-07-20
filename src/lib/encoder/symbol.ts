@@ -21,21 +21,21 @@
 // SOFTWARE.
 
 export default (): PuidEncoder => {
-  const s1 = '!'.charCodeAt(0)
-  const s2 = '#'.charCodeAt(0) - 1
-  const s3 = '('.charCodeAt(0) - 5
-  const s4 = ':'.charCodeAt(0) - 13
-  const s5 = '['.charCodeAt(0)
-  const s6 = ']'.charCodeAt(0) - 21
-  const s7 = '{'.charCodeAt(0) - 24
+  const bang = '!'.charCodeAt(0)
+  const hash = '#'.charCodeAt(0) - 1
+  const openParen = '('.charCodeAt(0) - 5
+  const colon = ':'.charCodeAt(0) - 13
+  const openSquareBracket = '['.charCodeAt(0)
+  const closeSquareBracket = ']'.charCodeAt(0) - 21
+  const openCurlyBracket = '{'.charCodeAt(0) - 24
 
   return (n: number) => {
-    if (n === 0) return s1
-    if (n < 5) return n + s2
-    if (n < 13) return n + s3
-    if (n < 20) return n + s4
-    if (n === 20) return s5
-    if (n < 24) return n + s6
-    return n + s7
+    if (n === 0) return bang
+    if (n < 5) return n + hash
+    if (n < 13) return n + openParen
+    if (n < 20) return n + colon
+    if (n === 20) return openSquareBracket
+    if (n < 24) return n + closeSquareBracket
+    return n + openCurlyBracket
   }
 }

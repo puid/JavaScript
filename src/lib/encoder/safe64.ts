@@ -24,14 +24,14 @@ export default (): PuidEncoder => {
   const decimal = '0'.charCodeAt(0)
   const upper = 'A'.charCodeAt(0) - 10
   const lower = 'a'.charCodeAt(0) - 36
-  const hyphen = '-'.charCodeAt(0) - 62
-  const underscore = '_'.charCodeAt(0) - 63
+  const hyphen = '-'.charCodeAt(0)
+  const underscore = '_'.charCodeAt(0)
 
   return (n: number) => {
     if (n < 10) return n + decimal
     if (n < 36) return n + upper
     if (n < 62) return n + lower
-    if (n === 62) return n + hyphen
-    return n + underscore
+    if (n === 62) return hyphen
+    return underscore
   }
 }
