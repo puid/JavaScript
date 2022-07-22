@@ -119,17 +119,14 @@ const fillEntropy = (entropyOffset: number, entropyBuffer: ArrayBuffer, entropyF
 const valueAt = (lOffset: number, nBits: number, puidBytes: PuidBytes): number => {
   const lByteNdx = floor(lOffset / 8)
   const lByte = puidBytes[lByteNdx]
-
   const lBitNum = lOffset % 8
-  // eslint-disable-next-line functional/no-let
-  let rBitNum = lBitNum + nBits
 
-  if (rBitNum <= 8) {
-    return ((lByte << lBitNum) & 0xff) >> (lBitNum + (8 - rBitNum))
+  if (lBitNum + nBits <= 8) {
+    return ((lByte << lBitNum) & 0xff) >> (8 - nBits)
   }
-  rBitNum -= 8
 
   const rByte = puidBytes[lByteNdx + 1]
+  const rBitNum = lBitNum + nBits - 8
 
   const lValue = ((lByte << lBitNum) & 0xff) >> (lBitNum - rBitNum)
   const rValue = rByte >> (8 - rBitNum)
@@ -153,7 +150,7 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
   const mapper = new Array(puidLen).fill(0).map((zero, ndx) => zero + ndx)
 
   if (isPow2(nChars)) {
-    // When chars count is a power of 2, sliced bits always yield a valid char
+    // When chars count is a power of 2, sliced bits always yield a valid value
     const bitsMuncher = () => {
       entropyOffset = fillEntropy(entropyOffset, entropyBuffer, entropyFunction)
       const codes = mapper.map((ndx: number) =>
@@ -170,33 +167,37 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
   const puidShifts = bitShifts(puidChars)
 
   const acceptValue = (value: number): AcceptValue => {
+    // Value is valid if it is less than the number of characters
     if (value < nChars) {
       return [true, nBitsPerChar]
     }
+
+    // For invalid value, shift the minimal bits necessary to determine validity
     const bitShift = puidShifts.find((bs) => value < bs[0])
     const shift = bitShift && bitShift[1]
     return [false, shift || nBitsPerChar]
   }
 
+  // When chars count not a power of 2, sliced bits may yield an invalid value
   const sliceValue = () => {
     if (nEntropyBits < entropyOffset + nBitsPerChar) {
       entropyOffset = fillEntropy(entropyOffset, entropyBuffer, entropyFunction)
     }
 
     const slicedValue = valueAt(entropyOffset, nBitsPerChar, entropyBytes)
+    
     const [accept, shift] = acceptValue(slicedValue)
+    // Returned shift is the minimal bits necessary to determine if slice value is valid
     entropyOffset += shift
 
     if (accept) {
       return charsEncoder(slicedValue)
     }
+    // If value not acceptable, slice another
     return sliceValue()
   }
 
-  const bitsMuncher = () => {
-    const codes = mapper.map(() => sliceValue())
-    return String.fromCharCode(...codes)
-  }
+  const bitsMuncher = () => String.fromCharCode(...mapper.map(() => sliceValue()))
 
   return { success: bitsMuncher }
 }
