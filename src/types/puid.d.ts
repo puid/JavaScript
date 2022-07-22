@@ -38,7 +38,6 @@ type PuidBitsMuncherResult = Either<PuidBitsMuncher>
 type PuidBitsSlicer = (puidBits: PuidBits) => number[]
 type PuidEncoder = (n: number) => number
 
-type EntropyBits = [offset: number, buffer: EntropyBuffer]
 type EntropyBytes = Uint8Array
 type EntropyBuffer = ArrayBuffer
 

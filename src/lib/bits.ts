@@ -59,6 +59,63 @@ const bitShifts = (chars: string): BitShifts => {
     )
 }
 
+const entropyByBytes = (skipBytes: number, entropyBuffer: EntropyBuffer, sourceBytes: EntropyByBytes) => {
+  const entropyBytes = new Uint8Array(entropyBuffer)
+  const bytesLen = entropyBytes.length
+  if (skipBytes === 0) {
+    entropyBytes.set(sourceBytes(bytesLen))
+  } else {
+    entropyBytes.set(sourceBytes(bytesLen - skipBytes), skipBytes)
+  }
+}
+
+const entropyByValues = (skipBytes: number, entropyBuffer: EntropyBuffer, sourceValues: EntropyByValues) => {
+  if (skipBytes === 0) {
+    const entropyBytes = new Uint8Array(entropyBuffer)
+    sourceValues(entropyBytes)
+  } else {
+    const rightBytes = new Uint8Array(entropyBuffer, skipBytes)
+    sourceValues(rightBytes)
+  }
+}
+
+const fillEntropy = (entropyOffset: number, entropyBuffer: ArrayBuffer, entropyFunction: EntropyFunction): number => {
+  const entropyBytes: PuidBytes = new Uint8Array(entropyBuffer)
+
+  const nEntropyBytes = entropyBytes.length
+  const nEntropyBits = 8 * nEntropyBytes
+
+  const [byValues, entropySource] = entropyFunction
+
+  if (entropyOffset === nEntropyBits) {
+    // No carry
+    if (byValues) {
+      entropyByValues(0, entropyBuffer, entropySource as EntropyByValues)
+    } else {
+      entropyByBytes(0, entropyBuffer, entropySource as EntropyByBytes)
+    }
+  } else {
+    // Handle carry
+    const nUnusedBits = nEntropyBits - entropyOffset
+    const nUnusedBytes = ceil(nUnusedBits / 8)
+
+    const offsetByteNum = floor(entropyOffset / 8)
+
+    // Move unused bytes to the left
+    const unusedBytes = new Uint8Array(entropyBuffer, offsetByteNum)
+    entropyBytes.set(unusedBytes)
+
+    // Fill right bytes with new random values
+    if (byValues) {
+      entropyByValues(nUnusedBytes, entropyBuffer, entropySource as EntropyByValues)
+    } else {
+      entropyByBytes(nUnusedBytes, entropyBuffer, entropySource as EntropyByBytes)
+    }
+  }
+
+  return entropyOffset % 8
+}
+
 const valueAt = (lOffset: number, nBits: number, puidBytes: PuidBytes): number => {
   const lByteNdx = floor(lOffset / 8)
   const lByte = puidBytes[lByteNdx]
@@ -80,75 +137,15 @@ const valueAt = (lOffset: number, nBits: number, puidBytes: PuidBytes): number =
   return lValue + rValue
 }
 
-const entropyByBytes = (skipBytes: number, entropyBuffer: EntropyBuffer, sourceBytes: EntropyByBytes) => {
-  const entropyBytes = new Uint8Array(entropyBuffer)
-  const bytesLen = entropyBytes.length
-  if (skipBytes === 0) {
-    entropyBytes.set(sourceBytes(bytesLen))
-  } else {
-    entropyBytes.set(sourceBytes(bytesLen - skipBytes), skipBytes)
-  }
-}
-
-const entropyByValues = (skipBytes: number, entropyBuffer: EntropyBuffer, sourceValues: EntropyByValues) => {
-  if (skipBytes === 0) {
-    const entropyBytes = new Uint8Array(entropyBuffer)
-    sourceValues(entropyBytes)
-  } else {
-    const rightBytes = new Uint8Array(entropyBuffer, skipBytes)
-    sourceValues(rightBytes)
-  }
-}
-
-const fillEntropy = (entropyBits: EntropyBits, entropyFunction: EntropyFunction) => {
-  const [offset, entropyBuffer] = entropyBits
-
-  const entropyBytes: PuidBytes = new Uint8Array(entropyBuffer)
-
-  const nEntropyBytes = entropyBytes.length
-  const nEntropyBits = 8 * nEntropyBytes
-
-  // New offset
-  // eslint-disable-next-line functional/immutable-data
-  entropyBits[0] = offset % 8
-
-  const [byValues, entropySource] = entropyFunction
-
-  if (offset === nEntropyBits) {
-    // No carry
-    if (byValues) {
-      entropyByValues(0, entropyBuffer, entropySource as EntropyByValues)
-    } else {
-      entropyByBytes(0, entropyBuffer, entropySource as EntropyByBytes)
-    }
-  } else {
-    // Handle carry
-    const nUnusedBits = nEntropyBits - offset
-    const nUnusedBytes = ceil(nUnusedBits / 8)
-
-    const offsetByteNum = floor(offset / 8)
-
-    // Move unused bytes to the left
-    const unusedBytes = new Uint8Array(entropyBuffer, offsetByteNum)
-    entropyBytes.set(unusedBytes)
-
-    // Fill right bytes with new random values
-    if (byValues) {
-      entropyByValues(nUnusedBytes, entropyBuffer, entropySource as EntropyByValues)
-    } else {
-      entropyByBytes(nUnusedBytes, entropyBuffer, entropySource as EntropyByBytes)
-    }
-  }
-}
-
 export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunction): PuidBitsMuncherResult => {
   const nBitsPerChar = bitsPerChar(puidChars)
   const nBitsPerPuid = nBitsPerChar * puidLen
   const nBytesPerPuid = ceil(nBitsPerPuid / 8)
 
   const bufferLen = nBytesPerPuid + 1
+  // eslint-disable-next-line functional/no-let
+  let entropyOffset = 8 * bufferLen
   const entropyBuffer = new ArrayBuffer(bufferLen)
-  const entropyBits: EntropyBits = [8 * bufferLen, entropyBuffer]
   const entropyBytes = new Uint8Array(entropyBuffer)
 
   const charsEncoder = encoder(puidChars)
@@ -158,13 +155,11 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
   if (isPow2(nChars)) {
     // When chars count is a power of 2, sliced bits always yield a valid char
     const bitsMuncher = () => {
-      fillEntropy(entropyBits, entropyFunction)
-      const entropyOffset = entropyBits[0]
-      // eslint-disable-next-line functional/immutable-data
-      entropyBits[0] = entropyOffset + nBitsPerPuid
+      entropyOffset = fillEntropy(entropyOffset, entropyBuffer, entropyFunction)
       const codes = mapper.map((ndx: number) =>
         charsEncoder(valueAt(entropyOffset + ndx * nBitsPerChar, nBitsPerChar, entropyBytes))
       )
+      entropyOffset += nBitsPerPuid
       return String.fromCharCode(...codes)
     }
 
@@ -184,14 +179,13 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
   }
 
   const sliceValue = () => {
-    if (nEntropyBits < entropyBits[0] + nBitsPerChar) {
-      fillEntropy(entropyBits, entropyFunction)
+    if (nEntropyBits < entropyOffset + nBitsPerChar) {
+      entropyOffset = fillEntropy(entropyOffset, entropyBuffer, entropyFunction)
     }
 
-    const slicedValue = valueAt(entropyBits[0], nBitsPerChar, entropyBytes)
+    const slicedValue = valueAt(entropyOffset, nBitsPerChar, entropyBytes)
     const [accept, shift] = acceptValue(slicedValue)
-    // eslint-disable-next-line functional/immutable-data
-    entropyBits[0] += shift
+    entropyOffset += shift
 
     if (accept) {
       return charsEncoder(slicedValue)
