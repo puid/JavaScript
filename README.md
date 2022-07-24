@@ -1,6 +1,6 @@
 # puid-js
 
-Simple, flexible and efficient generation of probably unique identifiers (`puid`, aka random strings) of intuitively specified entropy using pre-defined or custom characters.
+Simple, flexible and efficient generation of probably unique identifiers (`puid`, aka random strings) of intuitively specified entropy using pre-defined or custom characters (including Unicode).
 
 ```js
   const { Chars, puid } = require('puid-js')

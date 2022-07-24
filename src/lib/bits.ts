@@ -34,6 +34,17 @@ type AcceptValue = readonly [accept: boolean, shift: number]
 type BitShift = readonly [number, number]
 type BitShifts = readonly BitShift[]
 
+// Create array of minimum bits required to determine if a value is less than nChars
+// Array elements are of the form [n, bits]: For values less than n, bits bits are required
+//
+// As example, the bits shifts array for the 36 AlphaNumLower characters is:
+//   [36, 6], [39, 5], [47, 3], [63, 2]
+//
+// Each value slice uses 6 bits of entropy. In bits, 36 is 100100.
+// Now suppose we slice the value 50. In bits, 50 is 110010.
+// 
+// Only two bits are necessary to determine 100100 < 110010
+//
 const bitShifts = (chars: string): BitShifts => {
   const nBitsPerChar = bitsPerChar(chars)
   const baseBitShift: BitShift = [chars.length, ceil(nBitsPerChar)]

@@ -169,12 +169,12 @@ test('dîngøsky chars (count power of 2 with carry)', (t) => {
 
 test('Safe32 (count non-power of 2 with carry)', (t) => {
   //    D    2    E    3    E    9    D    A    1    9    0    3    B    7    3    C
-  /// 1101 0010 1110 0011 1110 1001 1101 1010 0001 1001 0000 0011 1011 0111 0011 1100
+  // 1101 0010 1110 0011 1110 1001 1101 1010 0001 1001 0000 0011 1011 0111 0011 1100
   //
   // 11010 01011 10001 11110 10011 10110 10000 11001 00000 01110 11011 10011 1100
   // |---| |---| |---| |---| |---| |---| |---| |---| |---| |---| |---| |---|
-  //  26    11    17    30    19    22    16    25     0    14    27    19
-  //   M     h     r     R     B     G     q     L     2     n     N     B
+  //   26    11    17    30    19    22    16    25     0    14    27    19
+  //    M     h     r     R     B     G     q     L     2     n     N     B
   //
   const safe32Bytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x03, 0xb7, 0x3c])
   const { generator: safe32Id } = puid({ bits: 20, chars: Chars.Safe32, entropyBytes: safe32Bytes })
@@ -193,7 +193,7 @@ test('puid safe32 entropyValues', (t) => {
   t.is(valuesId(), '2nNB')
 })
 
-test('AlphaLower chars (26 chars, 5 bits', (t) => {
+test('AlphaLower chars (26 chars, 5+ bits', (t) => {
   // shifts: [ [ 26, 5 ], [ 31, 3 ] ]
   //
   //    5    3    c    8    8    d    e    6    3    e    2    6    a    0
@@ -237,14 +237,14 @@ test('Base32 chars (32 chars, 5 bits', (t) => {
 })
 
 test('Base32Hex chars (32 chars, 5 bits)', (t) => {
-  const base32HexBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x12, 0xce])
+  const base32HexBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x12, 0xce, 0x28])
   const { generator: base32HexId } = puid({ bits: 30, chars: Chars.Base32Hex, entropyBytes: base32HexBytes })
   t.is(base32HexId(), 'qbhujm')
-  t.is(base32HexId(), 'gp2b71')
+  t.is(base32HexId(), 'gp2b72')
 })
 
 test('Base32HexUpper chars (32 chars, 5 bits)', (t) => {
-  const base32HexUpperBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x12, 0xce])
+  const base32HexUpperBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x12, 0xce, 0x28])
   const { generator: base32HexUpperId } = puid({
     bits: 20,
     chars: Chars.Base32HexUpper,
@@ -252,7 +252,7 @@ test('Base32HexUpper chars (32 chars, 5 bits)', (t) => {
   })
   t.is(base32HexUpperId(), 'QBHU')
   t.is(base32HexUpperId(), 'JMGP')
-  t.is(base32HexUpperId(), '2B71')
+  t.is(base32HexUpperId(), '2B72')
 })
 
 test('puid from Chars.AlphaUpper and Chars.SafeAscii', (t) => {
