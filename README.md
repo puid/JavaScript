@@ -68,7 +68,7 @@ Creating a random ID generator using `puid-js` is a simple as:
 `puid-js` uses `crypto.randomBytes` as the default entropy source. Options can be used to configure a specific entropy source:
 
   - `entropyBytes`:  any function of the form `(n: number): Uint8Array`, such as `crypto.randomBytes`
-  - `entropyValues` any function of the form `(buf: Uint8Array): void`, such as `crypto.getRandomValues`
+  - `entropyValues`: any function of the form `(buf: Uint8Array): void`, such as `crypto.getRandomValues`
 
 These options make it easy to use `puid-js` in either a `nodejs` or web environment. It also allows for using any suitable third-party entropy source. The project includes an experimental PRNG random bytes generator, `prngBytes`, and the test code uses the `entropyBytes` option for deterministic testing.
 
@@ -163,14 +163,15 @@ The optional `PuidConfig` object has the following fields:
   - `entropyBytes` is the form of the function `crypto.randomBytes`
   - `entropyValues` is the form of the function `crypto.getRandomValues`
   - Only one of `entropyBytes` or `entropyValues` can be set
-  - Defaults
-     - `bits`: 128
-     - `chars`: `Chars.Safe64`
-     - `entropyBytes`: `crypto.randomBytes`
+
+##### Defaults
+  - `bits`: 128
+  - `chars`: `Chars.Safe64`
+  - `entropyBytes`: `crypto.randomBytes`
 
 #### PuidInfo
 
-The HOF `puid` includes an `info` field that displays generator configuration:
+The `puid` generator function includes an `info` field that displays generator configuration:
 
   - `bits`: ID entropy
   - `bitsPerChar`: Entropy bits per ID character
@@ -210,10 +211,10 @@ There are 16 pre-defined character sets:
 | Alpha | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz |
 | AlphaLower | abcdefghijklmnopqrstuvwxyz |
 | AlphaUupper | ABCDEFGHIJKLMNOPQRSTUVWXYZ |
-| Alphanum | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 |
-| AalphanumLower | abcdefghijklmnopqrstuvwxyz0123456789 |
-| AalphanumUpper | ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 |
-| Base32 | ABCDEFGHIJKLMNOPQRSTUVWXYZ234567 |
+| Alphanum | 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz |
+| AalphanumLower | 0123456789abcdefghijklmnopqrstuvwxyz |
+| AalphanumUpper | 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ |
+| Base32 | 234567ABCDEFGHIJKLMNOPQRSTUVWXYZ |
 | Base32Hex | 0123456789abcdefghijklmnopqrstuv |
 | base32HexUpper | 0123456789ABCDEFGHIJKLMNOPQRSTUV |
 | Decimal | 0123456789 |
@@ -224,7 +225,7 @@ There are 16 pre-defined character sets:
 | Safe64 | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_ |
 | Symbol | !#$%&()*+,-./:;<=>?@[]^_{\|}~ |
 
-Any string of up to 256 unique characters can be used for **`puid`** generation.
+Any string of up to 256 unique characters, including unicode, can be used for **`puid`** generation.
 
 [TOC](#TOC)
 
@@ -260,7 +261,7 @@ In this case, the entropy of the string **`'18f6303a'`** is 1 bit. That's it; 1 
 
  > _**Entropy is a measure in the uncertainty of an event, independent of the representation of that uncertainty**_
 
-In information theory you would state the above process has two symbols, **`18f6303a`** and **`1`**, and the outcome is equally likely to be either symbol. Hence there is 1 bit of entropy in the process. The symbols don't really matter. It would be much more likely to see the symbols **`T`** and **`F`**, or **`0`** and **`1`**, or even **`ON`** and **`OFF`**, but regardless, the process _produces_ 1 bit of entropy and symbols used to _represent_ that entropy does not effect the entropy itself.
+In information theory you would state the above process has two symbols, **`18f6303a`** and **`1`**, and the outcome is equally likely to be either symbol. Hence there is 1 bit of entropy in the process. The symbols don't really matter. It would be much more likely to see the symbols **`T`** and **`F`**, or **`0`** and **`1`**, or even **`ON`** and **`OFF`**, but regardless, the process _produces_ 1 bit of entropy and symbols used to _represent_ that entropy do not effect the entropy itself.
 
 #### Entropy source
 
@@ -286,7 +287,7 @@ The goal of `puid-js` is to provide simple, intuitive random ID generation using
 > _**Random strings do not produce unique IDs**_
 
 
-Recall that entropy is the measure of uncertainty in the possible outcomes of an event. It is critical that the uncertainty of each event is *independent* of all prior events. This means two separate events *can* produce the same result (i.e., the same ID); otherwise the process isn't random. You could, of course, compare each generated random string with all prior IDs and thereby achieve uniqueness. But some such post-processing must occur to ensure random IDs are truly unique.
+Recall that entropy is the measure of uncertainty in the possible outcomes of an event. It is critical that the uncertainty of each event is *independent* of all prior events. This means two separate events *can* produce the same result (i.e., the same ID); otherwise the process isn't random. You could, of course, compare each generated random string to all prior IDs and thereby achieve uniqueness. But some such post-processing must occur to ensure random IDs are truly unique.
 
 Deterministic uniqueness checks, however, incur significant processing overhead and are rarely used. Instead, developers (knowingly?) relax the requirement that random IDs are truly, deterministically unique for a much lesser standard, one of probabilistic uniqueness. We "trust" that randomly generated IDs are unique by virtue of the chance of a repeated ID being very low.
 
@@ -308,7 +309,7 @@ And here again we hit another subtlety. It turns out the question, as posed, is 
 
 Fortunately, there is a mathematical correlation between entropy and the probability of uniqueness. This correlation is often explored via the [Birthday Paradox](https://en.wikipedia.org/wiki/Birthday_problem#Cast_as_a_collision_problem). Why paradox? Because the relationship, when cast as a problem of unique birthdays in some number of people, is initially quite surprising. But nonetheless, the relationship exists, it is well-known, and `puid-js` will take care of the math for us.
 
-At this point we can now note that rather than say "*these IDs have **N** bits of entropy*", we actually want to say "_generating **T** of these IDs has a risk **R** of a repeat_". And fortunately, `puid-js` allows straightforward specification of that very statement for our random IDs. Using `puid-js`, you can easily specify "*I want **T** random IDs with a risk **R** of repeat*". `puid-js` will take care of using the correct entropy in efficiently generating the IDs.
+At this point we can now note that rather than say "*these IDs have **N** bits of entropy*", we actually want to say "_generating **T** of these IDs has a risk **R** of a repeat_". And fortunately, `puid-js` allows straightforward specification of that very statement for random ID generation. Using `puid-js`, you can easily specify "*I want **T** random IDs with a risk **R** of repeat*". `puid-js` will take care of using the correct entropy in efficiently generating the IDs.
 
 [TOC](#TOC)
 
@@ -320,7 +321,7 @@ The efficiency of generating random IDs has no bearing on the statistical charac
 
 As previously stated, random ID generation is basically a *transformation* of an entropy source into a character *representation* of captured entropy. But the entropy of the source and the entropy of the captured ID *is not the same thing*.
 
-To understand the difference, we'll investigate an example that is, surprisingly, quite common. Consider the following strategy for generating random strings: using a fixed list of **k** characters, generate a random uniform integer **i**, `0 <= i < k`, as an index into the list to select a character. Repeat this **n** times, where **n** is the length of the desired string. In JavaScript this might look like:
+To understand the difference, we'll investigate an example that is, surprisingly, quite common. Consider the following strategy for generating random strings: using a fixed list of **k** characters, use a random uniform integer **i**, `0 <= i < k`, as an index into the list to select a character. Repeat this **n** times, where **n** is the length of the desired string. In JavaScript this might look like:
 
 ```js
   const commonId = (n) => {
@@ -340,17 +341,17 @@ First, consider the amount of source entropy used in the code above. The JavaScr
 
 Second, consider how much entropy was captured by the ID. Given there are 26 characters, each character represents log<sub>2</sub>(26) = 4.7 bits of entropy. So each generated ID represents 8 * 4.7 = 37.6 bits of entropy.
 
-Hmmmm. That means the ratio of ID entropy to source entropy is 37.6 / 424 = 0.09, or a whopping **9%**. That's not an efficiency most developers would be comfortable with. Granted, this is a particularly egregious example, but most random ID generation suffers such inefficient use of source entropy.
+Hmmm. That means the ratio of ID entropy to source entropy is 37.6 / 424 = 0.09, or a whopping **9%**. That's not an efficiency most developers would be comfortable with. Granted, this is a particularly egregious example, but most random ID generation suffers such inefficient use of source entropy.
 
-Without delving into the specifics (see the code?), `puid-js` employs various means to maximize the use of source entropy. In comparison, `puid-js` uses **87.5%** of source entropy in generating random IDs using lower case alpha characters. For character sets with counts equal a power of 2, `puid-js` uses 100% of source entropy.
+Without delving into the specifics (see the code?), `puid-js` employs various means to maximize the use of source entropy. As comparison, `puid-js` uses **87.5%** of source entropy in generating random IDs using lower case alpha characters. For character sets with counts equal a power of 2, `puid-js` uses 100% of source entropy.
 
 #### Characters
 
-As previous noted, the entropy of a random string is equal to the entropy per character times the length of the string. Using this value leads to an easy calculation of **entropy representation efficiency** (`ere`). We can define `ere` as the ratio of random string entropy to the number of bits required to represent the string. As example, the lower case alphabet has an entropy per character of 4.7, so an ID of length 8 using those characters has 37.6 bits of entropy. Since each lower case character requires 1 byte, this leads to an `ere` of 37.6 / 64 = 0.59, or 59%. Non-ascii characters, of course, occupy more than 1 byte. `puid-js` uses the `Buffer.byteLength` function to compute `ere`.
+As previous noted, the entropy of a random string is equal to the entropy per character times the length of the string. Using this value leads to an easy calculation of **entropy representation efficiency** (`ere`). We can define `ere` as the ratio of random string entropy to the number of bits required to represent the string. For example, the lower case alphabet has an entropy per character of 4.7, so an ID of length 8 using those characters has 37.6 bits of entropy. Since each lower case character requires 1 byte, this leads to an `ere` of 37.6 / 64 = 0.59, or 59%. Non-ascii characters, of course, occupy more than 1 byte. `puid-js` uses the `Buffer.byteLength` function to compute `ere`.
 
 <a name="UUIDCharacters"></a>
 
-The total entropy of a string is the product of the entropy per character times the string length *only* if each character in the final string is equally probable. This is always the case for `puid-js`, and is usually the case for other random string generators. There is, however, a notable exception: the version 4 string representation of a `uuid`. As defined in [RFC 4122, Section 4.4](https://tools.ietf.org/html/rfc4122#section-4.4), a v4 `uuid` uses a total of 32 hex and 4 hyphen characters. Although the hex characters can represent 4 bits of entropy each, 6 bits of the hex representation in a `uuid` are actually fixed, so there is only `32*4 - 6 = 122`-bits of entropy (not 128). The 4 fixed-position hyphen characters contribute zero entropy. So a 36 character `uuid` has an `ere` of `122 / (36*8) = 0.40`, or **40%**. Compare that to, say, the default `puid-js` generator, which has slightly higher entropy (128 bits) and yet yields an `ere` of 0.75, or **75%**. Who doesn't love efficiency?
+The total entropy of a string is the product of the entropy per character times the string length *only* if each character in the final string is equally probable. This is always the case for `puid-js`, and is usually the case for other random string generators. There is, however, a notable exception: the version 4 string representation of a `uuid`. As defined in [RFC 4122, Section 4.4](https://tools.ietf.org/html/rfc4122#section-4.4), a v4 `uuid` uses a total of 32 hex and 4 hyphen characters. Although the hex characters can represent 4 bits of entropy each, 6 bits of the hex representation in a `uuid` are actually fixed, so there is only `32*4 - 6 = 122`-bits of entropy (not 128). The 4 fixed-position hyphen characters contribute zero entropy. So a 36 character `uuid` has an `ere` of `122 / (36*8) = 0.40`, or **40%**. Compare that to, say, the default `puid-js` generator, which has slightly higher entropy (132 bits) and yet yields an `ere` of 0.75, or **75%**. Who doesn't love efficiency?
 
 [TOC](#TOC)
 
@@ -371,7 +372,7 @@ Or why not be a bit more reasonable and think about the problem for a moment. Su
   // => 'c1DVnnbI3RTr'
 ```
 
-The resulting ID have 72 bits of entropy. But guess what? You don't care. What you care is having explicitly stated you expect to have 1000 IDs and your level of repeat risk is 1 in a quadrillion. And as added bonus, the IDs are only 12 characters long, not 36. Who doesn't like ease, control and efficiency?
+The resulting ID have 72 bits of entropy. But guess what? You don't care. What you care is having explicitly stated you expect to have 1000 IDs and your level of repeat risk is 1 in a quadrillion. It's right there in the code. And as added bonus, the IDs are only 12 characters long, not 36. Who doesn't like ease, control and efficiency?
 
 #### Under specify
 
@@ -388,7 +389,7 @@ Now, suppose you are tasked to maintain this code:
   // => 'u4a4fbhhwlsikct'
 ```
 
-Hmmm. Looks like there are 500,000 IDs expected and the repeat risk is 1 in a trillion. No guessing. It's right there in the code. Oh, and by the way, the IDs are 15 characters long. But who cares? It's the ID randomness that matters, not the length.
+Hmmm. Looks like there are 500,000 IDs expected and the repeat risk is 1 in a trillion. No guessing. The code is explicit. Oh, and by the way, the IDs are 15 characters long. But who cares? It's the ID randomness that matters, not the length.
 
 [TOC](#TOC)
 
@@ -397,7 +398,7 @@ Hmmm. Looks like there are 500,000 IDs expected and the repeat risk is 1 in a tr
 `Puid` employs a number of efficiencies for random ID generation:
 
 - Only the number of bytes necessary to generate the next `puid` are fetched from the entropy source
-- Each `puid` character is generated by slicing the minimum number of bits possible
+- Each `puid` character is generated by slicing the minimum number of entropy bits possible
 - Any left-over bits are carried forward and used in generating the next `puid`
 - All characters are equally probable to maximize captured entropy
 - Only characters that represent entropy are present in the final ID 
@@ -407,7 +408,7 @@ Hmmm. Looks like there are 500,000 IDs expected and the repeat risk is 1 in a tr
 
 ### <a name="tl;dr"></a>tl;dr
 
-`Puid` is a simple, fast, flexible and efficient random ID generator:
+`Puid` is a simple, flexible and efficient random ID generator:
 
 - **Ease**
 
@@ -425,10 +426,6 @@ Hmmm. Looks like there are 500,000 IDs expected and the repeat risk is 1 in a tr
 
     Maximum use of system entropy
     
-- **Secure**
-
-    Defaults to a secure source of entropy
-
 - **Compact**
 
     ID strings represent maximum entropy for characters used

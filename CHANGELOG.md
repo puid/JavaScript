@@ -12,7 +12,7 @@
 
 ### Added
 - Chars.Symbol and encoder
-- Encoders for Chars.AlphanumLower and Chars.ALphanumUpper
+- Encoders for Chars.AlphanumLower and Chars.AlphanumUpper
 
 ### Testing
 - Test for above fixes, changes and additions
