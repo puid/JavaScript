@@ -255,14 +255,43 @@ test('Base32HexUpper chars (32 chars, 5 bits)', (t) => {
   t.is(base32HexUpperId(), '2B72')
 })
 
-test('puid from Chars.AlphaUpper and Chars.SafeAscii', (t) => {
+test('puid from Chars.AlphaUpper', (t) => {
   const { generator: alphaUpperId } = puid({ bits: 48, chars: Chars.AlphaUpper })
-  t.is(alphaUpperId.info.charsName, 'alphaUpper')
-  t.is(alphaUpperId().length, 11)
 
+  const { bits, bitsPerChar, chars, charsName, ere, length } = alphaUpperId.info
+  t.is(bits, 51.7)
+  t.is(bitsPerChar, 4.7)
+  t.is(chars, Chars.AlphaUpper)
+  t.is(charsName, 'alphaUpper')
+  t.is(ere, 0.59)
+  t.is(length, 11)
+  t.is(alphaUpperId().length, length)
+})
+
+test('puid from Chars.SafeAscii', (t) => {
   const { generator: safeAsciiId } = puid({ bits: 52, chars: Chars.SafeAscii })
-  t.is(safeAsciiId.info.charsName, 'safeAscii')
-  t.is(safeAsciiId().length, 9)
+
+  const { bits, bitsPerChar, chars, charsName, ere, length } = safeAsciiId.info
+  t.is(bits, 58.43)
+  t.is(bitsPerChar, 6.49)
+  t.is(chars, Chars.SafeAscii)
+  t.is(charsName, 'safeAscii')
+  t.is(ere, 0.81)
+  t.is(length, 9)
+  t.is(safeAsciiId().length, length)
+})
+
+test('puid from Chars.Symbol', (t) => {
+  const { generator: symbolId } = puid({ bits: 59, chars: Chars.Symbol })
+
+  const { bits, bitsPerChar, chars, charsName, ere, length } = symbolId.info
+  t.is(bits, 62.5)
+  t.is(bitsPerChar, 4.81)
+  t.is(chars, Chars.Symbol)
+  t.is(charsName, 'symbol')
+  t.is(ere, 0.6)
+  t.is(length, 13)
+  t.is(symbolId().length, length)
 })
 
 test('256 characters', (t) => {
