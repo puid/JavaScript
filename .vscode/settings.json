@@ -6,6 +6,7 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "cSpell.words": [
     "abcdefghijklmnopqrstuv",
+    "alphanum",
     "ATCG",
     "BDFGHJLMNPQRT",
     "bdfghjmnpqrt",
