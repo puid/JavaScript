@@ -113,8 +113,7 @@ export default (puidConfig: PuidConfig = {}): PuidResult => {
   const puidLen = round(ceil(puidEntropyBits / puidBitsPerChar))
   const ere = (puidBitsPerChar * puidChars.length) / (8 * Buffer.byteLength(puidChars))
 
-  const { error: bitsMuncherError, success: bitsMuncher } = muncher(puidLen, puidChars, selectEntropyFunction(puidConfig))
-  if (bitsMuncherError) return { error: bitsMuncherError }
+  const bitsMuncher = muncher(puidLen, puidChars, selectEntropyFunction(puidConfig))
 
   const puid: Puid = (): string => bitsMuncher()
 

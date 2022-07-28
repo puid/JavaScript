@@ -42,7 +42,7 @@ type BitShifts = readonly BitShift[]
 //
 // Each value slice uses 6 bits of entropy. In bits, 36 is 100100.
 // Now suppose we slice the value 50. In bits, 50 is 110010.
-// 
+//
 // Only two bits are necessary to determine 100100 < 110010
 //
 const bitShifts = (chars: string): BitShifts => {
@@ -90,6 +90,7 @@ const entropyByValues = (skipBytes: number, entropyBuffer: EntropyBuffer, source
   }
 }
 
+// Fill passed entropy buffer using entropy function
 const fillEntropy = (entropyOffset: number, entropyBuffer: ArrayBuffer, entropyFunction: EntropyFunction): number => {
   const entropyBytes: PuidBytes = new Uint8Array(entropyBuffer)
 
@@ -145,7 +146,7 @@ const valueAt = (lOffset: number, nBits: number, puidBytes: PuidBytes): number =
   return lValue + rValue
 }
 
-export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunction): PuidBitsMuncherResult => {
+export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunction): PuidBitsMuncher => {
   const nBitsPerChar = bitsPerChar(puidChars)
   const nBitsPerPuid = nBitsPerChar * puidLen
   const nBytesPerPuid = ceil(nBitsPerPuid / 8)
@@ -160,9 +161,9 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
   const nChars = puidChars.length
   const mapper = new Array(puidLen).fill(0).map((zero, ndx) => zero + ndx)
 
+  // When chars count is a power of 2, sliced bits always yield a valid value
   if (isPow2(nChars)) {
-    // When chars count is a power of 2, sliced bits always yield a valid value
-    const bitsMuncher = () => {
+    return () => {
       entropyOffset = fillEntropy(entropyOffset, entropyBuffer, entropyFunction)
       const codes = mapper.map((ndx: number) =>
         charsEncoder(valueAt(entropyOffset + ndx * nBitsPerChar, nBitsPerChar, entropyBytes))
@@ -170,9 +171,9 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
       entropyOffset += nBitsPerPuid
       return String.fromCharCode(...codes)
     }
-
-    return { success: bitsMuncher }
   }
+
+  // When chars count not a power of 2, sliced bits may yield an invalid value
 
   const nEntropyBits = 8 * entropyBytes.length
   const puidShifts = bitShifts(puidChars)
@@ -189,14 +190,15 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
     return [false, shift || nBitsPerChar]
   }
 
-  // When chars count not a power of 2, sliced bits may yield an invalid value
+  // Slice value from entropy bytes
   const sliceValue = () => {
+    // Add more entropy bytes if necessary
     if (nEntropyBits < entropyOffset + nBitsPerChar) {
       entropyOffset = fillEntropy(entropyOffset, entropyBuffer, entropyFunction)
     }
 
     const slicedValue = valueAt(entropyOffset, nBitsPerChar, entropyBytes)
-    
+
     const [accept, shift] = acceptValue(slicedValue)
     // Returned shift is the minimal bits necessary to determine if slice value is valid
     entropyOffset += shift
@@ -208,9 +210,7 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
     return sliceValue()
   }
 
-  const bitsMuncher = () => String.fromCharCode(...mapper.map(() => sliceValue()))
-
-  return { success: bitsMuncher }
+  return () => String.fromCharCode(...mapper.map(() => sliceValue()))
 }
 
 export { bitShifts }

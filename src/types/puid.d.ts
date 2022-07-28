@@ -11,8 +11,6 @@ type SuccessResult<T> = {
   success: T
 }
 
-type Either<T> = ErrorResult | SuccessResult<T>
-
 type PuidError = {
   error: Error
   generator?: never
@@ -34,7 +32,6 @@ type PuidBuffer = ArrayBuffer
 type PuidBytes = Uint8Array
 type PuidBits = [offset: number, bits: PuidBytes]
 type PuidBitsMuncher = () => string
-type PuidBitsMuncherResult = Either<PuidBitsMuncher>
 type PuidBitsSlicer = (puidBits: PuidBits) => number[]
 type PuidEncoder = (n: number) => number
 
