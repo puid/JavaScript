@@ -46,7 +46,7 @@ const selectEntropyFunction = (puidConfig: PuidConfig): EntropyFunction => {
  *
  * ### Example (es module)
  * ```js
- * import puid from 'puid-js'
+ * import Chars, puid from 'puid-js'
  *
  * const { generator: safe32Id } = puid({ total: 100000, risk: 1e12, chars: Chars.Safe32 })
  * safe32Id()
@@ -55,7 +55,7 @@ const selectEntropyFunction = (puidConfig: PuidConfig): EntropyFunction => {
  *
  * ### Example (commonjs)
  * ```js
- * const puid = require('puid-js')
+ * const { Chars, puid } = require('puid-js')
  *
  * const { generator: alphaNumId } = puid({ total: 100000, risk: 1e12, chars: Chars.AlphaNum })
  * alphaNumId()
