@@ -13,6 +13,7 @@
     "random string",
     "security",
     "entropy",
+    "uuid",
     "token"
   ],
   "scripts": {

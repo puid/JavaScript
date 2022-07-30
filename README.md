@@ -18,7 +18,7 @@ Simple, flexible and efficient generation of probably unique identifiers (`puid`
     - [Installation](#Installation)
     - [API](#API)
     - [Chars](#Chars)
-- [Random Strings](#RandomStrings)
+- [Motivation](#Motivation)
     - [What is a random string?](#WhatIsARandomString)
     - [How random is a random string?](#RandomStringEntropy)
     - [Uniqueness](#Uniqueness)
@@ -229,7 +229,7 @@ Any string of up to 256 unique characters, including unicode, can be used for **
 
 [TOC](#TOC)
 
-## <a name="RandomStrings"></a>Random Strings
+## <a name="Motivation"></a>Motivation
 
 Developers frequently need random strings in applications ranging from long-term (e.g., data store keys) to short-term (e.g. DOM IDs on a web page). These IDs are, of course, of secondary concern. No one wants to think about them much, they just want to be easy to generate.
 
