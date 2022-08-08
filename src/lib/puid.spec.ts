@@ -1,4 +1,4 @@
-import { fixedBytes } from '../test/util'
+import { fixedBytes } from './util'
 
 import { Chars } from './chars'
 import prngBytes from './prngBytes'
