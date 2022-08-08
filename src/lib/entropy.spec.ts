@@ -1,7 +1,7 @@
-import test, { ExecutionContext } from 'ava'
-
 import { Chars } from './chars'
 import { bitsForLen, entropyBits, entropyBitsPerChar, lenForBits } from './entropy'
+
+import test, { ExecutionContext } from 'ava'
 
 const round2 = (f: number): number => Math.round(f * 100) / 100
 

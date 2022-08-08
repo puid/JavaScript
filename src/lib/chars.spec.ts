@@ -1,6 +1,6 @@
-import test from 'ava'
-
 import { Chars, validChars } from './chars'
+
+import test from 'ava'
 
 test('pre-defined Chars', (t) => {
   const allChars = [
