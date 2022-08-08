@@ -185,7 +185,7 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
     }
 
     // For invalid value, shift the minimal bits necessary to determine validity
-    const bitShift = puidShifts.find((bs) => value < bs[0])
+    const bitShift = puidShifts.find((bs) => value <= bs[0])
     const shift = bitShift && bitShift[1]
     return [false, shift || nBitsPerChar]
   }
