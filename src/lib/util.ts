@@ -3,6 +3,15 @@ import path from 'node:path'
 
 import { Chars } from '../lib/chars'
 
+export type DataParams = {
+  readonly binFile: string,
+  readonly testName: string,
+  readonly total: number,
+  readonly risk: number,
+  readonly chars: string,
+  readonly count: number
+}
+
 const fixedBytes = (arr: readonly number[]) => staticBytes(new Uint8Array(arr))
 
 const fileBytes = (binFile: string) => staticBytes(new Uint8Array(fs.readFileSync(binFile)))
@@ -18,9 +27,9 @@ const staticBytes = (bytes: Uint8Array) => {
   }
 
 const dataPath = (dataName: string, fileName: string) => 
-  path.join(__dirname, '..', '..', '..', 'src', 'test', 'data', dataName, fileName)
+  path.join(__dirname, '..', '..', '..', 'data', dataName, fileName)
 
-const dataParams = (dataName) => {
+const dataParams = (dataName: string): DataParams => {
   const paramsPath = dataPath(dataName, 'params')
   const params = fs.readFileSync(paramsPath, 'utf-8').split('\n')
   return {
@@ -34,7 +43,7 @@ const dataParams = (dataName) => {
   console.log('params:', params)
 }
 
-const charsParam = (param) => {
+const charsParam = (param: string) => {
   const [charsType, charsDef] = param.split(':')
   if (charsType === 'custom') {
     return charsDef
@@ -73,8 +82,8 @@ const charsParam = (param) => {
     default:
       return 'Error'
   }
-
-
 }
 
-export { dataParams, fileBytes, fixedBytes }
+const dataIds = (dataName: string) => fs.readFileSync(dataPath(dataName, 'ids'), 'utf-8').split('\n')
+
+export { dataIds, dataParams, fileBytes, fixedBytes }

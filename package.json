@@ -24,6 +24,7 @@
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "fix:lint": "eslint src --ext .ts --fix",
     "test": "run-s build test:*",
+    "test:data": "yarn ava src/data.ts",
     "test:lint": "eslint src --ext .ts",
     "test:prettier": "prettier \"src/**/*.ts\" --list-different",
     "test:spelling": "cspell \"{README.md,.github/*.md,src/**/*.ts}\"",
@@ -91,8 +92,7 @@
       }
     },
     "files": [
-      "!build/module/**",
-      "!src/test/util.ts"
+      "!build/module/**"
     ]
   },
   "config": {
@@ -110,7 +110,8 @@
     "extends": "@istanbuljs/nyc-config-typescript",
     "exclude": [
       "**/*.spec.ts",
-      "**/prngBytes.ts"
+      "src/lib/prngBytes.ts",
+      "src/lib/util.ts"
     ]
   }
 }
