@@ -27,9 +27,9 @@ export enum Chars {
   Alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
   AlphaLower = 'abcdefghijklmnopqrstuvwxyz',
   AlphaUpper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-  AlphaNum = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
-  AlphaNumLower = '0123456789abcdefghijklmnopqrstuvwxyz',
-  AlphaNumUpper = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  AlphaNum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+  AlphaNumLower = 'abcdefghijklmnopqrstuvwxyz0123456789',
+  AlphaNumUpper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
   Base32 = '234567ABCDEFGHIJKLMNOPQRSTUVWXYZ',
   Base32Hex = '0123456789abcdefghijklmnopqrstuv',
   Base32HexUpper = '0123456789ABCDEFGHIJKLMNOPQRSTUV',
@@ -38,7 +38,7 @@ export enum Chars {
   HexUpper = '0123456789ABCDEF',
   SafeAscii = '!#$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_abcdefghijklmnopqrstuvwxyz{|}~',
   Safe32 = '2346789bdfghjmnpqrtBDFGHJLMNPQRT',
-  Safe64 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_',
+  Safe64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_',
   Symbol = '!#$%&()*+,-./:;<=>?@[]^_{|}~'
 }
 
@@ -47,6 +47,8 @@ export const charsName = (chars: string): string => {
   if (chars === Chars.AlphaLower) return 'alphaLower'
   if (chars === Chars.AlphaUpper) return 'alphaUpper'
   if (chars === Chars.AlphaNum) return 'alphaNum'
+  if (chars === Chars.AlphaNumLower) return 'alphaNumLower'
+  if (chars === Chars.AlphaNumUpper) return 'alphaNumUpper'
   if (chars === Chars.Base32) return 'base32'
   if (chars === Chars.Base32Hex) return 'base32Hex'
   if (chars === Chars.Base32HexUpper) return 'base32HexUpper'

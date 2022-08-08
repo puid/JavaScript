@@ -21,13 +21,13 @@
 // SOFTWARE.
 
 export default (): PuidEncoder => {
-  const decimal = '0'.charCodeAt(0)
-  const upper = 'A'.charCodeAt(0) - 10
-  const lower = 'a'.charCodeAt(0) - 36
+  const upper = 'A'.charCodeAt(0)
+  const lower = 'a'.charCodeAt(0) - 26
+  const decimal = '0'.charCodeAt(0) - 52
 
   return (n: number) => {
-    if (n < 10) return n + decimal
-    if (n < 36) return n + upper
-    return n + lower
+    if (n < 26) return n + upper
+    if (n < 52) return n + lower
+    return n + decimal
   }
 }

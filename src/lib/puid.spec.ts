@@ -219,14 +219,14 @@ test('AlphaNum chars (62 chars, 6 bits)', (t) => {
   // 1101 0010 1110 0011 1110 1001 1111 1010 0001 1001 0000 0000
   //
   // 110100 101110 001111 101001 111110 100001 100100 000000
-  // |----| |----| |----| |----| xxxxxx |----| |----|
-  //   52     46     15     41     62     33     36
-  //    q      k      F      f             X      a
+  // |----| |----| |----| |----| xxxxxx |----| |----| |----|
+  //   52     46     15     41     62     33     36      0
+  //    0      u      P      p             h      k      A
   //
   const alphaNumBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xfa, 0x19, 0x00])
   const { generator: alphaNumId } = puid({ bits: 17, chars: Chars.AlphaNum, entropyBytes: alphaNumBytes })
-  t.is(alphaNumId(), 'qkF')
-  t.is(alphaNumId(), 'fXa')
+  t.is(alphaNumId(), '0uP')
+  t.is(alphaNumId(), 'phk')
 })
 
 test('Base32 chars (32 chars, 5 bits', (t) => {
