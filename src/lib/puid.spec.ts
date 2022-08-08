@@ -255,6 +255,32 @@ test('Base32HexUpper chars (32 chars, 5 bits)', (t) => {
   t.is(base32HexUpperId(), '2B72')
 })
 
+test('puid from Chars.AlphaNumLower', (t) => {
+  const { generator: alphaNumLowerId } = puid({ bits: 35, chars: Chars.AlphaNumLower })
+
+  const { bits, bitsPerChar, chars, charsName, ere, length } = alphaNumLowerId.info
+  t.is(bits, 36.19)
+  t.is(bitsPerChar, 5.17)
+  t.is(chars, Chars.AlphaNumLower)
+  t.is(charsName, 'alphaNumLower')
+  t.is(ere, 0.65)
+  t.is(length, 7)
+  t.is(alphaNumLowerId().length, length)
+})
+
+test('puid from Chars.AlphaNumUpper', (t) => {
+  const { generator: alphaNumUpperId } = puid({ bits: 52, chars: Chars.AlphaNumUpper })
+
+  const { bits, bitsPerChar, chars, charsName, ere, length } = alphaNumUpperId.info
+  t.is(bits, 56.87)
+  t.is(bitsPerChar, 5.17)
+  t.is(chars, Chars.AlphaNumUpper)
+  t.is(charsName, 'alphaNumUpper')
+  t.is(ere, 0.65)
+  t.is(length, 11)
+  t.is(alphaNumUpperId().length, length)
+})
+
 test('puid from Chars.AlphaUpper', (t) => {
   const { generator: alphaUpperId } = puid({ bits: 48, chars: Chars.AlphaUpper })
 
