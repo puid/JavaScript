@@ -1,7 +1,7 @@
+import test, { ExecutionContext } from 'ava'
+
 import { Chars } from './chars'
 import encoder from './encoder'
-
-import test, { ExecutionContext } from 'ava'
 
 const chars_encoder = (t: ExecutionContext, chars: string) => {
   const chars_encoder = encoder(chars)

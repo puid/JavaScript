@@ -1,10 +1,9 @@
-import { fixedBytes } from './util'
+import test from 'ava'
 
 import { Chars } from './chars'
 import prngBytes from './prngBytes'
 import puid from './puid'
-
-import test from 'ava'
+import { fixedBytes } from './util'
 
 test('puid with invalid chars', (t) => {
   const { error: notUnique } = puid({ chars: 'dingosky-dog' })

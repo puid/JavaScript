@@ -1,7 +1,7 @@
+import test from 'ava'
+
 import { bitShifts } from './bits'
 import { Chars } from './chars'
-
-import test from 'ava'
 
 test('chars: dingosky', (t) => t.deepEqual(bitShifts('dingosky'), [[8, 3]]))
 

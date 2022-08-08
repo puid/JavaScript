@@ -1,7 +1,7 @@
+import test from 'ava'
+
 import prngBytes from './prngBytes'
 import puid from './puid'
-
-import test from 'ava'
 
 test('prng bytes', (t) => {
   t.is(prngBytes(4).length, 4)
