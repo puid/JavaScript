@@ -1,19 +1,10 @@
-import test from 'ava'
+import { fixedBytes } from '../test/util'
 
 import { Chars } from './chars'
 import prngBytes from './prngBytes'
 import puid from './puid'
 
-const fixedBytes = (arr: readonly number[]) => {
-  const bytes = new Uint8Array(arr)
-  // eslint-disable-next-line functional/no-let
-  let offset = 0
-  return (n: number) => {
-    const subBytes = bytes.subarray(offset, n + offset)
-    offset += n
-    return subBytes
-  }
-}
+import test from 'ava'
 
 test('puid with invalid chars', (t) => {
   const { error: notUnique } = puid({ chars: 'dingosky-dog' })
@@ -32,9 +23,7 @@ test('puid invalid total/risk pair', (t) => {
 })
 
 test('puid with both entropyBytes and entropyValues config', (t) => {
-  const randomValues = (buf: EntropyBytes) => {
-    console.log(buf)
-  }
+  const randomValues = (_: EntropyBytes) => { _ }
   const { error: whoops } = puid({ entropyBytes: prngBytes, entropyValues: randomValues })
   t.regex(whoops.message, /specify both/)
 })
@@ -51,6 +40,7 @@ test('puid default', (t) => {
   t.truthy(info)
 
   const { bits, bitsPerChar, chars, charsName, ere, length } = info
+
   t.is(bits, 132)
   t.is(bitsPerChar, 6)
   t.is(chars, Chars.Safe64)
