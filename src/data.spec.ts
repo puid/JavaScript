@@ -23,3 +23,11 @@ const testData = (t: ExecutionContext, dataName: string) => {
 test('alphanum data', (t) => testData(t, 'alphanum'))
 
 test('alpha_10_lower data', (t) => testData(t, 'alpha_10_lower'))
+
+test('dingosky data', (t) => testData(t, 'dingosky'))
+
+test('safe32 data', (t) => testData(t, 'safe32'))
+
+test('safe_ascii data', (t) => testData(t, 'safe_ascii'))
+
+test('unicode data', (t) => testData(t, 'unicode'))

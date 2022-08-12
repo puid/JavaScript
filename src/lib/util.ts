@@ -51,31 +51,31 @@ const charsParam = (param: string) => {
   switch(charsDef) {
     case 'alpha':
       return Chars.Alpha
-    case 'alphaLower':
+    case 'alpha_lower':
       return Chars.AlphaLower
-    case 'alphaUpper':
+    case 'alpha_upper':
       return Chars.AlphaUpper
     case 'alphanum':
       return Chars.AlphaNum
-    case 'alphaNumLower':
+    case 'alphanum_lower':
       return Chars.AlphaNumLower
-    case 'alphaNumUpper':
+    case 'alphanum_upper':
       return Chars.AlphaNumUpper
     case 'base32':
       return Chars.Base32
-    case 'base32Hex':
+    case 'base32_hex':
       return Chars.Base32Hex
-    case 'base32HexUpper':
+    case 'base32_hex_upper':
       return Chars.Base32HexUpper
     case 'hex':
       return Chars.Hex
-    case 'hexUpper':
+    case 'hex_upper':
       return Chars.HexUpper
     case 'safe32':
       return Chars.Safe32
     case 'safe64':
       return Chars.Safe64
-    case 'safeAscii':
+    case 'safe_ascii':
       return Chars.SafeAscii
     case 'symbol':
       return Chars.Symbol
