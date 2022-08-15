@@ -5,7 +5,7 @@
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
-  "repository": "https://github.com/puid/puid-js",
+  "repository": "https://github.com/puid/JavaScript",
   "license": "MIT",
   "keywords": [
     "random",

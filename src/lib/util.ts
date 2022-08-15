@@ -40,7 +40,6 @@ const dataParams = (dataName: string): DataParams => {
     chars: charsParam(params[4]),
     count: parseInt(params[5])
   }
-  console.log('params:', params)
 }
 
 const charsParam = (param: string) => {

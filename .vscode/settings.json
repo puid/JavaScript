@@ -32,5 +32,8 @@
     "TTACCCAC",
     "TTTTTFTTFFFFFTFF",
     "UFLYN"
-  ]
+  ],
+  "files.exclude": {
+    "**/.nyc_output": true
+  }
 }

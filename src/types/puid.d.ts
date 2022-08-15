@@ -1,16 +1,6 @@
 /* eslint-disable functional/prefer-readonly-type */
 type ErrorMessage = string
 
-type ErrorResult = {
-  error: Error
-  success?: never
-}
-
-type SuccessResult<T> = {
-  error?: never
-  success: T
-}
-
 type PuidError = {
   error: Error
   generator?: never
