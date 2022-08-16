@@ -28,7 +28,7 @@ const endian = (() => {
   return buf8[0] === 0xff ? 'little' : 'big'
 })()
 
-const prngBytes = (): EntropyBytes => {
+const prngBytes = (): Uint8Array => {
   const float64Buffer = new ArrayBuffer(8)
   const float64View = new DataView(float64Buffer)
   float64View.setFloat64(0, Math.random())
@@ -40,7 +40,7 @@ const prngBytes = (): EntropyBytes => {
   return bytesBuffer
 }
 
-export default (n: number): EntropyBytes => {
+export default (n: number): Uint8Array => {
   const entropyBuffer = new ArrayBuffer(n)
   const chunkCount = Math.floor(n / BYTES_USED_PER_FLOAT_64)
 

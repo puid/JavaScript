@@ -46,7 +46,7 @@ const { ceil, log2, trunc } = Math
  *
  * @returns entropy bits
  */
-const entropyBits = (total: Total, risk: Risk): number => {
+const entropyBits = (total: number, risk: number): number => {
   if (total == 0 || total == 1) return 0
   if (risk == 0 || risk == 1) return 0
 

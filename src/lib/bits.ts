@@ -70,7 +70,7 @@ const bitShifts = (chars: string): BitShifts => {
     )
 }
 
-const entropyByBytes = (skipBytes: number, entropyBuffer: EntropyBuffer, sourceBytes: EntropyByBytes) => {
+const entropyByBytes = (skipBytes: number, entropyBuffer: ArrayBuffer, sourceBytes: EntropyByBytes) => {
   const entropyBytes = new Uint8Array(entropyBuffer)
   const bytesLen = entropyBytes.length
   if (skipBytes === 0) {
@@ -80,7 +80,7 @@ const entropyByBytes = (skipBytes: number, entropyBuffer: EntropyBuffer, sourceB
   }
 }
 
-const entropyByValues = (skipBytes: number, entropyBuffer: EntropyBuffer, sourceValues: EntropyByValues) => {
+const entropyByValues = (skipBytes: number, entropyBuffer: ArrayBuffer, sourceValues: EntropyByValues) => {
   if (skipBytes === 0) {
     const entropyBytes = new Uint8Array(entropyBuffer)
     sourceValues(entropyBytes)
@@ -92,7 +92,7 @@ const entropyByValues = (skipBytes: number, entropyBuffer: EntropyBuffer, source
 
 // Fill passed entropy buffer using entropy function
 const fillEntropy = (entropyOffset: number, entropyBuffer: ArrayBuffer, entropyFunction: EntropyFunction): number => {
-  const entropyBytes: PuidBytes = new Uint8Array(entropyBuffer)
+  const entropyBytes: Uint8Array = new Uint8Array(entropyBuffer)
 
   const nEntropyBytes = entropyBytes.length
   const nEntropyBits = 8 * nEntropyBytes
@@ -128,7 +128,7 @@ const fillEntropy = (entropyOffset: number, entropyBuffer: ArrayBuffer, entropyF
   return entropyOffset % 8
 }
 
-const valueAt = (lOffset: number, nBits: number, puidBytes: PuidBytes): number => {
+const valueAt = (lOffset: number, nBits: number, puidBytes: Uint8Array): number => {
   const lByteNdx = floor(lOffset / 8)
   const lByte = puidBytes[lByteNdx]
   const lBitNum = lOffset % 8

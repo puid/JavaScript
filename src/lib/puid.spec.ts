@@ -22,7 +22,7 @@ test('puid invalid total/risk pair', (t) => {
 })
 
 test('puid with both entropyBytes and entropyValues config', (t) => {
-  const randomValues = (_: EntropyBytes) => { _ }
+  const randomValues = (_: Uint8Array) => { _ }
   const { error: whoops } = puid({ entropyBytes: prngBytes, entropyValues: randomValues })
   t.regex(whoops.message, /specify both/)
 })
@@ -174,7 +174,7 @@ test('Safe32 (count non-power of 2 with carry)', (t) => {
 
 test('puid safe32 entropyValues', (t) => {
   const valuesBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x03, 0xb7, 0x3c])
-  const entropyValues = (buf: EntropyBytes) => buf.set(valuesBytes(buf.length))
+  const entropyValues = (buf: Uint8Array) => buf.set(valuesBytes(buf.length))
 
   const { generator: valuesId } = puid({ bits: 20, chars: Chars.Safe32, entropyValues })
   t.is(valuesId(), 'MhrR')

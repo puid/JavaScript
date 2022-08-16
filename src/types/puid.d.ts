@@ -18,19 +18,14 @@ type ValidChars = ErrorMessage | null
 type Total = number
 type Risk = number
 
-type PuidBuffer = ArrayBuffer
-type PuidBytes = Uint8Array
-type PuidBits = [offset: number, bits: PuidBytes]
+type PuidBits = [offset: number, bits: Uint8Array]
 type PuidBitsMuncher = () => string
 type PuidBitsSlicer = (puidBits: PuidBits) => number[]
 type PuidEncoder = (n: number) => number
 
-type EntropyBytes = Uint8Array
-type EntropyBuffer = ArrayBuffer
-
-type EntropyByBytes = (nBytes: number) => EntropyBytes
+type EntropyByBytes = (nBytes: number) => Uint8Array
 // eslint-disable-next-line functional/no-return-void
-type EntropyByValues = (buffer: EntropyBytes) => void
+type EntropyByValues = (buffer: Uint8Array) => void
 
 type EntropySource = EntropyByBytes | EntropyByValues
 type EntropyFunction = [byValues: boolean, source: EntropySource]
@@ -38,10 +33,10 @@ type EntropyFunction = [byValues: boolean, source: EntropySource]
 type PuidConfig = {
   chars?: string
   bits?: number
-  total?: Total
+  total?: number
   entropyBytes?: EntropyByBytes
   entropyValues?: EntropyByValues
-  risk?: Risk
+  risk?: number
 }
 
 type PuidInfo = {
