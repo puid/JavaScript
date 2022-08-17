@@ -1,4 +1,6 @@
-import crypto from 'crypto'
+import { randomBytes } from 'crypto'
+
+import { EntropyByBytes, EntropyByValues, EntropyFunction, Puid, PuidConfig, PuidResult } from '../types/puid'
 
 import muncher from './bits'
 import { Chars, charsName, validChars } from './chars'
@@ -14,8 +16,7 @@ const selectEntropyFunction = (puidConfig: PuidConfig): EntropyFunction => {
   } else if (puidConfig.entropyBytes) {
     return [false, puidConfig.entropyBytes as EntropyByBytes]
   } else {
-    return [false, crypto.randomBytes]
-    // [true, crypto.getRandomValues]
+    return [false, randomBytes]
   }
 }
 
@@ -70,8 +71,8 @@ export default (puidConfig: PuidConfig = {}): PuidResult => {
   const DEFAULT_ENTROPY = 128
 
   if (puidConfig.chars) {
-    const errorMessage = validChars(puidConfig.chars)
-    if (errorMessage) return { error: new Error(errorMessage) }
+    const [isValid, errorMessage] = validChars(puidConfig.chars)
+    if (!isValid) return { error: new Error(errorMessage) }
   }
   const puidChars = puidConfig.chars || Chars.Safe64
 

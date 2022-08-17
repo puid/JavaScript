@@ -1,3 +1,5 @@
+import { PuidEncoder } from "../../types/puid"
+
 export default (): PuidEncoder => {
   const bang = '!'.charCodeAt(0)
   const ampersand = '&'.charCodeAt(0) - 4

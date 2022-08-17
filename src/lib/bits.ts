@@ -1,3 +1,5 @@
+import { EntropyByBytes, EntropyByValues, EntropyFunction, PuidBitsMuncher } from '../types/puid'
+
 import encoder from './encoder'
 import { entropyBitsPerChar } from './entropy'
 

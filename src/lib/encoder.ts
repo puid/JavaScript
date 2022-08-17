@@ -1,3 +1,5 @@
+import { PuidEncoder } from '../types/puid'
+
 import { Chars } from './chars'
 import alphaEncoder from './encoder/alpha'
 import alphaCaseEncoder from './encoder/alphaCase'

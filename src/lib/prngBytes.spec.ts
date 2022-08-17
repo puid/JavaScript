@@ -12,5 +12,6 @@ test('prng bytes', (t) => {
 
 test.only('prng puid', (t) => {
   const { generator: randId } = puid({ entropyBytes: prngBytes })
-  t.is(randId().length, randId.info.length)
+  t.assert(!!randId)
+  if (randId) t.is(randId().length, randId.info.length)
 })

@@ -1,3 +1,5 @@
+import { ValidChars } from "../types/puid"
+
 /**
  * Pre-defined character sets
  */
@@ -70,7 +72,7 @@ const codePointOf = (char: string): number => char.codePointAt(0) as number
  * import { validChars } from 'puid-js'
  *
  * validChars('dingosky')
- * // => [true, null]
+ * // => [true, '']
  *
  * validChars('dingodog')
  * // => [false, 'Characters not unique']
@@ -80,7 +82,7 @@ const codePointOf = (char: string): number => char.codePointAt(0) as number
  * const {validChars } = require('puid-js')
  *
  * validChars('dingosky')
- * // => [true, null]
+ * // => [true, '']
  * ```
  * @param chars - string of characters
  *
@@ -89,8 +91,8 @@ const codePointOf = (char: string): number => char.codePointAt(0) as number
 export const validChars = (chars: string): ValidChars => {
   const maxCharCount = 256
 
-  if (chars.length < 2) return 'Need at least 2 characters'
-  if (maxCharCount < chars.length) return `Character count cannot be greater than ${maxCharCount}`
+  if (chars.length < 2) return [false, 'Need at least 2 characters']
+  if (maxCharCount < chars.length) return [false, `Character count cannot be greater than ${maxCharCount}`]
 
   const charMap = Array.from(chars).reduce((map, char) => {
     map.set(char, validChar(char) ? (map.get(char) === false ? true : false) : null)
@@ -103,5 +105,5 @@ export const validChars = (chars: string): ValidChars => {
     return acc
   }, ok)
 
-  return charsCheck === ok ? null : charsCheck
+  return charsCheck === ok ? [true, ''] : [false, charsCheck]
 }

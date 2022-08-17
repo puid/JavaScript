@@ -1,3 +1,5 @@
+import { PuidEncoder } from "../../types/puid"
+
 export default (): PuidEncoder => {
   const upper = 'A'.charCodeAt(0)
   const lower = 'a'.charCodeAt(0) - 26

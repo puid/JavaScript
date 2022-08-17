@@ -1,6 +1,6 @@
 {
   "name": "puid-js",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Simple, fast, flexible and efficient generation of probably unique identifiers (`puid`, aka random strings) of intuitively specified entropy using pre-defined or custom characters, including unicode",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
@@ -18,8 +18,10 @@
   ],
   "scripts": {
     "build": "run-p build:*",
+    "build:declarations": "tsc src/index.ts --outFile build/main/index.d.ts --declaration --emitDeclarationOnly",
     "build:main": "rm -rf ./build && tsc",
     "build:module": "tsc -p tsconfig.module.json",
+    "build:pack": "yarn build:main && rm -f build/main/lib/**/*.d.ts && npm pack",
     "build:test": "rm -rf ./build && tsc -p tsconfig.test.json",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
