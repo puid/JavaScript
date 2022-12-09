@@ -6,6 +6,7 @@ src/**.js
 coverage
 *.log
 package-lock.json
+puid-js-*.tgz
 *~
 .yarn
 timing

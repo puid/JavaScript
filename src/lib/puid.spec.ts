@@ -1,6 +1,6 @@
 import test, { ExecutionContext } from 'ava'
 
-import { Puid, PuidConfig, } from '../types/puid'
+import { Puid, PuidConfig } from '../types/puid'
 
 import { Chars } from './chars'
 import prngBytes from './prngBytes'
@@ -12,7 +12,6 @@ const assertMessage = (t: ExecutionContext, error: Error | undefined, regex: Reg
   if (error) t.regex(error.message, regex)
 }
 
-
 test('puid with invalid chars', (t) => {
   const { error: notUnique } = puid({ chars: 'dingosky-dog' })
   assertMessage(t, notUnique, /not unique/)
@@ -23,14 +22,16 @@ test('puid with invalid chars', (t) => {
 
 test('puid invalid total/risk pair', (t) => {
   const { error: onlyTotal } = puid({ total: 1000 })
-  assertMessage(t, onlyTotal,/specified together/)
+  assertMessage(t, onlyTotal, /specified together/)
 
   const { error: onlyRisk } = puid({ risk: 1000 })
   assertMessage(t, onlyRisk, /specified together/)
 })
 
 test('puid with both entropyBytes and entropyValues config', (t) => {
-  const randomValues = (_: Uint8Array) => { _ }
+  const randomValues = (_: Uint8Array) => {
+    _
+  }
   const { error: whoops } = puid({ entropyBytes: prngBytes, entropyValues: randomValues })
   assertMessage(t, whoops, /specify both/)
 })
@@ -44,8 +45,8 @@ const puidGenerator = (config?: PuidConfig): Puid => {
   const { generator } = puid(config)
   if (generator) return generator
   const cxError = () => 'CxError'
-   // eslint-disable-next-line functional/immutable-data
-   cxError.info = {
+  // eslint-disable-next-line functional/immutable-data
+  cxError.info = {
     bits: -1,
     bitsPerChar: -1,
     chars: 'CxError',
@@ -55,6 +56,19 @@ const puidGenerator = (config?: PuidConfig): Puid => {
   }
   return cxError
 }
+
+test('wtf?', (t) => {
+  const { error, generator: defaultId } = puid()
+  t.assert(!error)
+
+  if (!defaultId) return
+
+  const info = defaultId.info
+  t.truthy(info)
+
+  const { bits } = info
+  t.is(bits, 132)
+})
 
 test('puid default', (t) => {
   const randId = puidGenerator()
@@ -136,7 +150,7 @@ test('2-bit custom DNA', (t) => {
 
 test('1-bit custom TF', (t) => {
   const tfBytes = fixedBytes([0b11111011, 0b00000100, 0b00101100, 0b10110011])
-  const tfId  = puidGenerator({ bits: 16, chars: 'FT', entropyBytes: tfBytes })
+  const tfId = puidGenerator({ bits: 16, chars: 'FT', entropyBytes: tfBytes })
 
   t.is(tfId(), 'TTTTTFTTFFFFFTFF')
   t.is(tfId(), 'FFTFTTFFTFTTFFTT')
@@ -147,7 +161,7 @@ test('Hex chars (count power of 2 with carry)', (t) => {
   // 1100 0111 1100 1001 0000 0000 0010 1010 1011 1101 0111 0010
   //
   const hexBytes = fixedBytes([0xc7, 0xc9, 0x00, 0x2a, 0xbd])
-  const  hexUpperId = puidGenerator({ bits: 12, chars: Chars.HexUpper, entropyBytes: hexBytes })
+  const hexUpperId = puidGenerator({ bits: 12, chars: Chars.HexUpper, entropyBytes: hexBytes })
 
   t.is(hexUpperId(), 'C7C')
   t.is(hexUpperId(), '900')
@@ -163,7 +177,7 @@ test('dingosky chars (count power of 2 with carry)', (t) => {
   //   k   i   y   o   o   o   d   d   i   n   s   g   k   s   k   n
   //
   const dingoskyBytes = fixedBytes([0xc7, 0xc9, 0x00, 0x2a, 0xbd, 0x72])
-  const  dingoskyId  = puidGenerator({ bits: 9, chars: 'dingosky', entropyBytes: dingoskyBytes })
+  const dingoskyId = puidGenerator({ bits: 9, chars: 'dingosky', entropyBytes: dingoskyBytes })
 
   t.is(dingoskyId(), 'kiy')
   t.is(dingoskyId(), 'ooo')
@@ -174,7 +188,7 @@ test('dingosky chars (count power of 2 with carry)', (t) => {
 
 test('dîngøsky chars (count power of 2 with carry)', (t) => {
   const dingoskyUtf8Bytes = fixedBytes([0xc7, 0xc9, 0x00, 0x2a, 0xbd, 0x72])
-  const dingoskyUtf8Id  = puidGenerator({ bits: 9, chars: 'dîngøsky', entropyBytes: dingoskyUtf8Bytes })
+  const dingoskyUtf8Id = puidGenerator({ bits: 9, chars: 'dîngøsky', entropyBytes: dingoskyUtf8Bytes })
   t.is(dingoskyUtf8Id(), 'kîy')
   t.is(dingoskyUtf8Id(), 'øøø')
   t.is(dingoskyUtf8Id(), 'ddî')
@@ -221,7 +235,7 @@ test('AlphaLower chars (26 chars, 5+ bits', (t) => {
   //
   const alphaLowerBytes = fixedBytes([0x53, 0xc8, 0x8d, 0xe6, 0x3e, 0x26, 0xa0])
   const alphaLowerId = puidGenerator({ bits: 14, chars: Chars.AlphaLower, entropyBytes: alphaLowerBytes })
-  
+
   t.is(alphaLowerId(), 'kpe')
   t.is(alphaLowerId(), 'itd')
   t.is(alphaLowerId(), 'cni')
@@ -241,7 +255,7 @@ test('AlphaNum chars (62 chars, 6 bits)', (t) => {
   //
   const alphaNumBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xfa, 0x19, 0x00])
   const alphaNumId = puidGenerator({ bits: 17, chars: Chars.AlphaNum, entropyBytes: alphaNumBytes })
-  
+
   t.is(alphaNumId(), '0uP')
   t.is(alphaNumId(), 'phk')
 })
@@ -249,7 +263,7 @@ test('AlphaNum chars (62 chars, 6 bits)', (t) => {
 test('Base32 chars (32 chars, 5 bits', (t) => {
   const base32Bytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x12, 0xce])
   const base32Id = puidGenerator({ bits: 25, chars: Chars.Base32, entropyBytes: base32Bytes })
-  
+
   t.is(base32Id(), 'UFLYN')
   t.is(base32Id(), 'QKT4F')
 })
@@ -257,7 +271,7 @@ test('Base32 chars (32 chars, 5 bits', (t) => {
 test('Base32Hex chars (32 chars, 5 bits)', (t) => {
   const base32HexBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x12, 0xce, 0x28])
   const base32HexId = puidGenerator({ bits: 30, chars: Chars.Base32Hex, entropyBytes: base32HexBytes })
-  
+
   t.is(base32HexId(), 'qbhujm')
   t.is(base32HexId(), 'gp2b72')
 })
@@ -269,7 +283,7 @@ test('Base32HexUpper chars (32 chars, 5 bits)', (t) => {
     chars: Chars.Base32HexUpper,
     entropyBytes: base32HexUpperBytes
   })
-  
+
   t.is(base32HexUpperId(), 'QBHU')
   t.is(base32HexUpperId(), 'JMGP')
   t.is(base32HexUpperId(), '2B72')
@@ -350,7 +364,7 @@ test('256 characters', (t) => {
   const tripleByte = String.fromCodePoint(...new Array(64).fill(tripleStart).map((start, ndx) => start + ndx))
 
   const c256Id = puidGenerator({ chars: singleByte + doubleByte + tripleByte })
-  
+
   t.is(c256Id.info.length, c256Id().length)
   t.is(c256Id.info.bitsPerChar, 8)
   t.is(c256Id.info.ere, 0.5)
