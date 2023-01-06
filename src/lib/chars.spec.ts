@@ -34,7 +34,7 @@ test('invalid characters', (t) => {
   t.regex(invalidChars("dingo'sky"), /Invalid/)
   t.regex(invalidChars('dingo\\sky'), /Invalid/)
   t.regex(invalidChars('dingo`sky'), /Invalid/)
-  t.regex(invalidChars('dingo\x7Fsky'), /Invalid/)
+  t.regex(invalidChars('dingo\u0088sky'), /Invalid/)
 })
 
 test('non-unique character', (t) => t.regex(invalidChars('unique'), /not unique/))

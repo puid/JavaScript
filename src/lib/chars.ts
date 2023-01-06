@@ -1,4 +1,4 @@
-import { ValidChars } from "../types/puid"
+import { ValidChars } from '../types/puid'
 
 /**
  * Pre-defined character sets
@@ -42,16 +42,17 @@ export const charsName = (chars: string): string => {
 }
 
 const validChar = (char: string): boolean => {
+  const codePointNonBreakSpace = 160
+
   const codePoint = codePointOf(char)
 
-  if (160 < codePoint) return true
-
-  if (char == '!') return true
-  if (codePoint < codePointOf('#')) return false
+  if (codePoint < codePointOf('!')) return false
+  if (char == '"') return false
   if (char == "'") return false
   if (char == '\\') return false
   if (char == '`') return false
-  if (codePointOf('~') < codePoint) return false
+  if (codePoint <= codePointOf('~')) return true
+  if (codePoint < codePointNonBreakSpace) return false
 
   return true
 }
