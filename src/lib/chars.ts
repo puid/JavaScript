@@ -10,7 +10,7 @@ export enum Chars {
   AlphaNum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
   AlphaNumLower = 'abcdefghijklmnopqrstuvwxyz0123456789',
   AlphaNumUpper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
-  Base32 = '234567ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  Base32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567',
   Base32Hex = '0123456789abcdefghijklmnopqrstuv',
   Base32HexUpper = '0123456789ABCDEFGHIJKLMNOPQRSTUV',
   Decimal = '0123456789',

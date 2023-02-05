@@ -1,8 +1,8 @@
-import { PuidEncoder } from "../../types/puid"
+import { PuidEncoder } from '../../types/puid'
 
 export default (): PuidEncoder => {
-  const decimal = '2'.charCodeAt(0)
-  const alpha = 'A'.charCodeAt(0) - 6
+  const alpha = 'A'.charCodeAt(0)
+  const decimal = '2'.charCodeAt(0) - 26
 
-  return (n: number) => n + (n < 6 ? decimal : alpha)
+  return (n: number) => n + (n < 26 ? alpha : decimal)
 }
