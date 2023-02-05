@@ -57,19 +57,6 @@ const puidGenerator = (config?: PuidConfig): Puid => {
   return cxError
 }
 
-test('wtf?', (t) => {
-  const { error, generator: defaultId } = puid()
-  t.assert(!error)
-
-  if (!defaultId) return
-
-  const info = defaultId.info
-  t.truthy(info)
-
-  const { bits } = info
-  t.is(bits, 132)
-})
-
 test('puid default', (t) => {
   const randId = puidGenerator()
 
@@ -101,19 +88,19 @@ test('puid total/risk', (t) => {
   t.is(length, 12)
 })
 
-const charsOption = (desc: string, chars: string, bits: number) => {
-  test(desc, (t) => {
-    const randId = puidGenerator({ chars: chars })
+const charsOption = (chars: string, bits: number, t: ExecutionContext) => {
+  const randId = puidGenerator({ chars: chars })
 
-    const { bits: puidBits, chars: puidChars } = randId.info
-    t.is(puidBits, bits)
-    t.is(puidChars, chars)
-  })
+  const { bits: puidBits, chars: puidChars } = randId.info
+  t.is(puidBits, bits)
+  t.is(puidChars, chars)
 }
 
-charsOption('Safe32', Chars.Safe32, 130)
-charsOption('AlphaNum', Chars.AlphaNum, 130.99)
-charsOption('dingosky', 'dingosky', 129)
+test('Chars bits', (t) => {
+  charsOption(Chars.Safe32, 130, t)
+  charsOption(Chars.AlphaNum, 130.99, t)
+  charsOption('dingosky', 129, t)
+})
 
 test('puid bits', (t) => {
   const randId = puidGenerator({ bits: 64 })
@@ -196,6 +183,7 @@ test('dîngøsky chars (count power of 2 with carry)', (t) => {
   t.is(dingoskyUtf8Id(), 'ksk')
 })
 
+
 test('Safe32 (count non-power of 2 with carry)', (t) => {
   //    D    2    E    3    E    9    D    A    1    9    0    3    B    7    3    C
   // 1101 0010 1110 0011 1110 1001 1101 1010 0001 1001 0000 0011 1011 0111 0011 1100
@@ -222,126 +210,223 @@ test('puid safe32 entropyValues', (t) => {
   t.is(valuesId(), '2nNB')
 })
 
-test('AlphaLower chars (26 chars, 5+ bits', (t) => {
-  // shifts: [ [ 26, 5 ], [ 31, 3 ] ]
-  //
-  //    5    3    c    8    8    d    e    6    3    e    2    6    a    0
-  // 0101 0011 1100 1000 1000 1101 1110 0110 0011 1110 0010 0110 1010 0000
-  //
-  // 01010 01111 00100 01000 110 111 10011 00011 111 00010 01101 01000 00
-  // |---| |---| |---| |---| xxx xxx |---| |---| xxx |---| |---| |---|
-  //   10    15     4     8   27  30   19     3   28    2    13     8
-  //    k     p     e     i             t     d         c     n     i
-  //
-  const alphaLowerBytes = fixedBytes([0x53, 0xc8, 0x8d, 0xe6, 0x3e, 0x26, 0xa0])
+test('AlphaLower chars, (26 chars, 5+ bits)', (t) => {
+  const alphaLowerBytes = fixedBytes([0xf1, 0xb1, 0x78, 0x0b, 0xaa, 0x28])
   const alphaLowerId = puidGenerator({ bits: 14, chars: Chars.AlphaLower, entropyBytes: alphaLowerBytes })
 
-  t.is(alphaLowerId(), 'kpe')
-  t.is(alphaLowerId(), 'itd')
-  t.is(alphaLowerId(), 'cni')
+  // shifts: [(25, 5), (27, 4), (31, 3)]
+  //
+  //    F    1    B    1    7    8    0    B    A    A
+  // 1111 0001 1011 0001 0111 1000 0000 1011 1010 1010
+  //
+  // 111 10001 10110 00101 111 00000 00101 1101 01010
+  // xxx |---| |---| |---| xxx |---| |---| xxxx |---|
+  //  30   17    22     5   30    0     5    26   10
+  //        r     w     f         a     f          k
+
+  t.is(alphaLowerId(), 'rwf')
+  t.is(alphaLowerId(), 'afk')
 })
 
 test('AlphaNum chars (62 chars, 6 bits)', (t) => {
-  //
-  // shifts: [ [62, 6] ]
+  const alphaNumBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xfa, 0x19, 0x00])
+  const alphaNumId = puidGenerator({ bits: 17, chars: Chars.AlphaNum, entropyBytes: alphaNumBytes })
+
+  // shifts: [{61, 6}, {63, 5}]
   //
   //    D    2    E    3    E    9    F    A    1    9    0    0
   // 1101 0010 1110 0011 1110 1001 1111 1010 0001 1001 0000 0000
   //
-  // 110100 101110 001111 101001 111110 100001 100100 000000
-  // |----| |----| |----| |----| xxxxxx |----| |----| |----|
-  //   52     46     15     41     62     33     36      0
-  //    0      u      P      p             h      k      A
+  // 110100 101110 001111 101001 11111 010000 110010 000000 0
+  // |----| |----| |----| |----| xxxxx |----| |----| |----|
+  //   52     46     15     41     62     16     50      0
+  //    0      u      P      p             Q      y      A
   //
-  const alphaNumBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xfa, 0x19, 0x00])
-  const alphaNumId = puidGenerator({ bits: 17, chars: Chars.AlphaNum, entropyBytes: alphaNumBytes })
 
   t.is(alphaNumId(), '0uP')
-  t.is(alphaNumId(), 'phk')
+  t.is(alphaNumId(), 'pQy')
 })
 
-test('Base32 chars (32 chars, 5 bits', (t) => {
-  const base32Bytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x12, 0xce])
-  const base32Id = puidGenerator({ bits: 25, chars: Chars.Base32, entropyBytes: base32Bytes })
-
-  t.is(base32Id(), 'UFLYN')
-  t.is(base32Id(), 'QKT4F')
-})
-
-test('Base32Hex chars (32 chars, 5 bits)', (t) => {
-  const base32HexBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x12, 0xce, 0x28])
-  const base32HexId = puidGenerator({ bits: 30, chars: Chars.Base32Hex, entropyBytes: base32HexBytes })
-
-  t.is(base32HexId(), 'qbhujm')
-  t.is(base32HexId(), 'gp2b72')
-})
-
-test('Base32HexUpper chars (32 chars, 5 bits)', (t) => {
-  const base32HexUpperBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x12, 0xce, 0x28])
-  const base32HexUpperId = puidGenerator({
-    bits: 20,
-    chars: Chars.Base32HexUpper,
-    entropyBytes: base32HexUpperBytes
-  })
-
-  t.is(base32HexUpperId(), 'QBHU')
-  t.is(base32HexUpperId(), 'JMGP')
-  t.is(base32HexUpperId(), '2B72')
-})
-
-test('puid from Chars.AlphaNumLower', (t) => {
-  const alphaNumLowerId = puidGenerator({ bits: 35, chars: Chars.AlphaNumLower })
+test('puid from AlphaNumLower', (t) => {
+  const alphaNumLowerBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xfa, 0x19, 0x00, 0xc8, 0x2d])
+  const alphaNumLowerId = puidGenerator({ bits: 12, chars: Chars.AlphaNumLower, entropyBytes: alphaNumLowerBytes })
 
   const { bits, bitsPerChar, chars, charsName, ere, length } = alphaNumLowerId.info
-  t.is(bits, 36.19)
+  t.is(bits, 15.51)
   t.is(bitsPerChar, 5.17)
   t.is(chars, Chars.AlphaNumLower)
   t.is(charsName, 'alphaNumLower')
   t.is(ere, 0.65)
-  t.is(length, 7)
-  t.is(alphaNumLowerId().length, length)
+  t.is(length, 3)
+
+  t.is(alphaNumLowerId(), 's9p')
+  t.is(alphaNumLowerId(), 'qib')
 })
 
-test('puid from Chars.AlphaNumUpper', (t) => {
-  const alphaNumUpperId = puidGenerator({ bits: 52, chars: Chars.AlphaNumUpper })
+test('puid from AlphaNumUpper', (t) => {
+  const alphaNumUpperBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xfa, 0x19, 0x00, 0xc8, 0x2d])
+  const alphaNumUpperId = puidGenerator({ bits: 26, chars: Chars.AlphaNumUpper, entropyBytes: alphaNumUpperBytes })
 
   const { bits, bitsPerChar, chars, charsName, ere, length } = alphaNumUpperId.info
-  t.is(bits, 56.87)
+  t.is(bits, 31.02)
   t.is(bitsPerChar, 5.17)
   t.is(chars, Chars.AlphaNumUpper)
   t.is(charsName, 'alphaNumUpper')
   t.is(ere, 0.65)
-  t.is(length, 11)
-  t.is(alphaNumUpperId().length, length)
+  t.is(length, 6)
+
+  t.is(alphaNumUpperId(), 'S9PQIB')
 })
 
-test('puid from Chars.AlphaUpper', (t) => {
-  const alphaUpperId = puidGenerator({ bits: 48, chars: Chars.AlphaUpper })
+test('puid from AlphaUpper', (t) => {
+  const alphaUpperBytes = fixedBytes([0xf1, 0xb1, 0x78, 0x0a, 0xc3, 0x28])
+  const alphaUpperId = puidGenerator({ bits: 14, chars: Chars.AlphaUpper, entropyBytes: alphaUpperBytes })
 
   const { bits, bitsPerChar, chars, charsName, ere, length } = alphaUpperId.info
-  t.is(bits, 51.7)
+  t.is(bits, 14.1)
   t.is(bitsPerChar, 4.7)
   t.is(chars, Chars.AlphaUpper)
   t.is(charsName, 'alphaUpper')
   t.is(ere, 0.59)
-  t.is(length, 11)
-  t.is(alphaUpperId().length, length)
+  t.is(length, 3)
+
+  t.is(alphaUpperId(), 'RWF')
+  t.is(alphaUpperId(), 'AFM')
 })
 
-test('puid from Chars.SafeAscii', (t) => {
-  const safeAsciiId = puidGenerator({ bits: 52, chars: Chars.SafeAscii })
+test('puid from Base32 chars (32 chars, 5 bits)', (t) => {
+  const base32Bytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x00, 0x22])
+  const base32Id = puidGenerator({ bits: 46, chars: Chars.Base32, entropyBytes: base32Bytes })
+
+  t.is(base32Id(), '2LR6TWQZAA')
+})
+
+test('puid from Base32Hex chars (32 chars, 5 bits)', (t) => {
+  const base32HexBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x03, 0xb7, 0x3c])
+  const base32HexId = puidGenerator({ bits: 30, chars: Chars.Base32Hex, entropyBytes: base32HexBytes })
+
+  t.is(base32HexId(), 'qbhujm')
+  t.is(base32HexId(), 'gp0erj')
+})
+
+test('puid from Base32HexUpper chars (32 chars, 5 bits)', (t) => {
+  const base32HexUpperBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x03, 0xb7, 0x3c])
+  const base32HexUpperId = puidGenerator({
+    bits: 14,
+    chars: Chars.Base32HexUpper,
+    entropyBytes: base32HexUpperBytes
+  })
+
+  t.is(base32HexUpperId(), 'QBH')
+  t.is(base32HexUpperId(), 'UJM')
+  t.is(base32HexUpperId(), 'GP0')
+  t.is(base32HexUpperId(), 'ERJ')
+})
+
+test('puid from Decimal (10 chars)', (t) => {
+  const decimalBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x03, 0xb7, 0x3c, 0xff])
+  const decimalId = puidGenerator({ bits: 16, chars: Chars.Decimal, entropyBytes: decimalBytes })
+
+  // shifts: [(9, 4), (11, 3), (15, 2)]
+  //
+  //    D    2    E    3    E    9    D    A    1    9    0    3    B    7    3    C    F    F
+  // 1101 0010 1110 0011 1110 1001 1101 1010 0001 1001 0000 0011 1011 0111 0011 1100 1111 1111
+  //
+  // 11 0100 101 11 0001 11 11 0100 11 101 101 0000 11 0010 0000 0111 0110 11 1001 11 1001 111 1111
+  // xx |--| xxx xx |--| xx xx |--| xx xxx xxx |--| xx |--| |--| |--| |--| xx |--| xx |--|
+  // 13   4   11 12   1  15 13   4  14  11  10   0  12   2    0    7    6  14   9  14   9
+  //      4           1          4               0       2    0    7    6       9       9
+
+  t.is(decimalId(), '41402')
+  t.is(decimalId(), '07699')
+})
+
+test('puid from Hex', (t) => {
+  const hexBytes = fixedBytes([0xc7, 0xc9, 0x00, 0x2a])
+  const hexId = puidGenerator({
+    bits: 8,
+    chars: Chars.Hex,
+    entropyBytes: hexBytes
+  })
+
+  t.is(hexId(), 'c7')
+  t.is(hexId(), 'c9')
+  t.is(hexId(), '00')
+  t.is(hexId(), '2a')
+})
+
+test('puid from HexUpper', (t) => {
+  const hexUpperBytes = fixedBytes([0xc7, 0xc9, 0x00, 0x2a, 0x16, 0x32])
+  const hexUpperId = puidGenerator({
+    bits: 12,
+    chars: Chars.HexUpper,
+    entropyBytes: hexUpperBytes
+  })
+
+  t.is(hexUpperId(), 'C7C')
+  t.is(hexUpperId(), '900')
+  t.is(hexUpperId(), '2A1')
+  t.is(hexUpperId(), '632')
+})
+
+test('puid from SafeAscii', (t) => {
+  const safeAsciiBytes = fixedBytes([0xa6, 0x33, 0x2a, 0xbe, 0xe6, 0x2d, 0xb3, 0x68, 0x41])
+  const safeAsciiId = puidGenerator({ bits: 18, chars: Chars.SafeAscii, entropyBytes: safeAsciiBytes })
+
+  // shifts: [(89, 7), (91, 6), (95, 5), (127, 2)]
+  //
+  //    A    6    3    3   2    A    B    E    E    6    2    D    B    3    6    8
+  // 1010 0110 0011 0011 0010 1010 1011 1110 1110 0110 0010 1101 1011 0011 0110 1000 0100 0001
+  //
+  // 1010011 0001100  11 0010010 0101111 10111 0011000 101101 1011001 101101 0000100 0001
+  // |-----| |-----|  xx |-----| |-----| xxxxx |-----| xxxxxx |-----| xxxxxx |-----|
+  //    83      12   101    21      47     92     24      91     89      90      4
+  //     x       /           8       R             ;              ~              &
 
   const { bits, bitsPerChar, chars, charsName, ere, length } = safeAsciiId.info
-  t.is(bits, 58.43)
+  t.is(bits, 19.48)
   t.is(bitsPerChar, 6.49)
   t.is(chars, Chars.SafeAscii)
   t.is(charsName, 'safeAscii')
   t.is(ere, 0.81)
-  t.is(length, 9)
-  t.is(safeAsciiId().length, length)
+  t.is(length, 3)
+
+  t.is(safeAsciiId(), 'x/8')
+  t.is(safeAsciiId(), 'R;~')
 })
 
-test('puid from Chars.Symbol', (t) => {
+test('puid from Safe32', (t) => {
+  const safe32Bytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x03, 0xb7, 0x3c])
+  const safe32Id = puidGenerator({
+    bits: 21,
+    chars: Chars.Safe32,
+    entropyBytes: safe32Bytes
+  })
+
+  //    D    2    E    3    E    9    D    A    1    9    0    3    B    7    3    C
+  // 1101 0010 1110 0011 1110 1001 1101 1010 0001 1001 0000 0011 1011 0111 0011 1100
+  //
+  // 11010 01011 10001 11110 10011 10110 10000 11001 00000 01110 11011 10011 1100
+  // |---| |---| |---| |---| |---| |---| |---| |---| |---| |---| |---| |---|
+  //   26    11    17    30    19    22    16    25     0    14    27    19
+  //   M     h     r     R     B     G     q     L     2     n     N     B
+
+  t.is(safe32Id(), 'MhrRB')
+  t.is(safe32Id(), 'GqL2n')
+})
+
+test('puid from Safe64', (t) => {
+  const safe64Bytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xfa, 0x19, 0x00])
+  const safe64Id = puidGenerator({
+    bits: 48,
+    chars: Chars.Safe64,
+    entropyBytes: safe64Bytes
+  })
+
+  t.is(safe64Id(), '0uPp-hkA')
+})
+
+test('puid from Symbol', (t) => {
   const symbolId = puidGenerator({ bits: 59, chars: Chars.Symbol })
 
   const { bits, bitsPerChar, chars, charsName, ere, length } = symbolId.info
@@ -352,6 +437,23 @@ test('puid from Chars.Symbol', (t) => {
   t.is(ere, 0.6)
   t.is(length, 13)
   t.is(symbolId().length, length)
+})
+
+test('Vowels (10 chars, 4 bits)', (t) => {
+  const vowelBytes = fixedBytes([0xa6, 0x33, 0xf6, 0x9e, 0xbd, 0xee, 0xa7])
+  //
+  // shifts: [(9, 4), (11, 3), (15, 2)]
+  //
+  //    A    6    3    3    F    6    9    E    B    D    E    E    A    7
+  // 1010 0110 0011 0011 1111 0110 1001 1110 1011 1101 1110 1110 1010 0111
+  //
+  // 101 0011 0001 1001 11 11 101 101 0011 11 0101 11 101 11 101 11 0101 0011 1
+  // xxx |--| |--| |--| xx xx xxx xxx |--| xx |--| xx xxx xx xxx xx |--| |--|
+  //  10   3    1    9  15 14  11  10   3  13   5  14  11 14  11 13   5    3
+  //       o    e    U                  o       A                     A    o
+
+  const vowelId = puidGenerator({ bits: 20, chars: 'aeiouAEIOU', entropyBytes: vowelBytes })
+  t.is(vowelId(), 'oeUoAAo')
 })
 
 test('256 characters', (t) => {

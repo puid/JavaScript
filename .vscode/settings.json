@@ -6,6 +6,7 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "cSpell.words": [
     "abcdefghijklmnopqrstuv",
+    "aeiou",
     "alphanum",
     "ATCG",
     "BDFGHJLMNPQRT",
@@ -20,18 +21,22 @@
     "GACGGTCG",
     "Hmmmm",
     "insgkskn",
+    "îøsîndøk",
     "JMGP",
     "kiyooodd",
     "Knoxen",
     "lcov",
     "libauth",
+    "PQIB",
     "prng",
     "Puid",
     "QBHU",
     "qbhujm",
     "TTACCCAC",
     "TTTTTFTTFFFFFTFF",
-    "UFLYN"
+    "TWQZAA",
+    "UFLYN",
+    "ydkîsnsd"
   ],
   "files.exclude": {
     "**/.nyc_output": true

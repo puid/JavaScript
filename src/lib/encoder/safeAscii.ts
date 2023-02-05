@@ -1,4 +1,4 @@
-import { PuidEncoder } from "../../types/puid"
+import { PuidEncoder } from '../../types/puid'
 
 export default (): PuidEncoder => {
   const bang = '!'.charCodeAt(0)
@@ -13,7 +13,8 @@ export default (): PuidEncoder => {
     if (n < 5) return n + ampersand
     if (n < 57) return n + openSquareBracket
     if (n < 60) return n + underscore
-    if (n < 89) return n + a
+    if (n < 90) return n + a
+    // CxInc throw
     return tilde
   }
 }

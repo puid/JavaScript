@@ -28,7 +28,8 @@ type BitShifts = readonly BitShift[]
 //
 const bitShifts = (chars: string): BitShifts => {
   const nBitsPerChar = bitsPerChar(chars)
-  const baseBitShift: BitShift = [chars.length, ceil(nBitsPerChar)]
+  const baseValue = chars.length % 2 == 0 ? chars.length - 1 : chars.length
+  const baseBitShift: BitShift = [baseValue, ceil(nBitsPerChar)]
 
   if (isPow2(chars.length)) return [baseBitShift]
 
@@ -41,9 +42,9 @@ const bitShifts = (chars: string): BitShifts => {
     .slice(2)
     .reduce(
       (shifts: BitShifts, bit: number) => {
-        if (isBitZero(chars.length, bit)) {
-          const shift: BitShift = [chars.length | (pow2(bit) - 1), nBitsPerChar - bit + 1]
-          return shifts.concat([shift])
+        if (isBitZero(baseValue, bit)) {
+          const bitShift: BitShift = [baseValue | (pow2(bit) - 1), nBitsPerChar - bit + 1]
+          return shifts.concat([bitShift])
         }
         return shifts
       },
@@ -109,16 +110,16 @@ const fillEntropy = (entropyOffset: number, entropyBuffer: ArrayBuffer, entropyF
   return entropyOffset % 8
 }
 
-const valueAt = (lOffset: number, nBits: number, puidBytes: Uint8Array): number => {
-  const lByteNdx = floor(lOffset / 8)
-  const lByte = puidBytes[lByteNdx]
-  const lBitNum = lOffset % 8
+const valueAt = (offset: number, nBits: number, bytes: Uint8Array): number => {
+  const lByteNdx = floor(offset / 8)
+  const lByte = bytes[lByteNdx]
+  const lBitNum = offset % 8
 
   if (lBitNum + nBits <= 8) {
     return ((lByte << lBitNum) & 0xff) >> (8 - nBits)
   }
 
-  const rByte = puidBytes[lByteNdx + 1]
+  const rByte = bytes[lByteNdx + 1]
   const rBitNum = lBitNum + nBits - 8
 
   const lValue = ((lByte << lBitNum) & 0xff) >> (lBitNum - rBitNum)
