@@ -10,16 +10,19 @@ export enum Chars {
   AlphaNum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
   AlphaNumLower = 'abcdefghijklmnopqrstuvwxyz0123456789',
   AlphaNumUpper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+  Base16 = '0123456789ABCDEF',
   Base32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567',
   Base32Hex = '0123456789abcdefghijklmnopqrstuv',
   Base32HexUpper = '0123456789ABCDEFGHIJKLMNOPQRSTUV',
+  Crockford32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ',
   Decimal = '0123456789',
   Hex = '0123456789abcdef',
   HexUpper = '0123456789ABCDEF',
   SafeAscii = '!#$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_abcdefghijklmnopqrstuvwxyz{|}~',
   Safe32 = '2346789bdfghjmnpqrtBDFGHJLMNPQRT',
   Safe64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_',
-  Symbol = '!#$%&()*+,-./:;<=>?@[]^_{|}~'
+  Symbol = '!#$%&()*+,-./:;<=>?@[]^_{|}~',
+  WordSafe32 = '23456789CFGHJMPQRVWXcfghjmpqrvwx'
 }
 
 export const charsName = (chars: string): string => {
@@ -29,15 +32,18 @@ export const charsName = (chars: string): string => {
   if (chars === Chars.AlphaNum) return 'alphaNum'
   if (chars === Chars.AlphaNumLower) return 'alphaNumLower'
   if (chars === Chars.AlphaNumUpper) return 'alphaNumUpper'
+  if (chars === Chars.Base16) return 'base16'
   if (chars === Chars.Base32) return 'base32'
   if (chars === Chars.Base32Hex) return 'base32Hex'
   if (chars === Chars.Base32HexUpper) return 'base32HexUpper'
+  if (chars === Chars.Crockford32) return 'crockford32'
   if (chars === Chars.Hex) return 'hex'
   if (chars === Chars.HexUpper) return 'hexUpper'
   if (chars === Chars.Safe32) return 'safe32'
   if (chars === Chars.Safe64) return 'safe64'
   if (chars === Chars.SafeAscii) return 'safeAscii'
   if (chars === Chars.Symbol) return 'symbol'
+  if (chars === Chars.WordSafe32) return 'wordSafe32'
   return 'custom'
 }
 

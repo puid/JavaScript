@@ -10,15 +10,18 @@ test('pre-defined Chars', (t) => {
     Chars.AlphaNumLower,
     Chars.AlphaNumUpper,
     Chars.AlphaUpper,
+    Chars.Base16,
     Chars.Base32,
     Chars.Base32Hex,
     Chars.Base32HexUpper,
+    Chars.Crockford32,
     Chars.Decimal,
     Chars.Hex,
     Chars.HexUpper,
     Chars.SafeAscii,
     Chars.Safe32,
-    Chars.Safe64
+    Chars.Safe64,
+    Chars.WordSafe32
   ]
 
   allChars.forEach((chars) => t.is(validChars(chars)[0], true))

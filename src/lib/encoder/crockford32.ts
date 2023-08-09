@@ -1,0 +1,22 @@
+import { PuidEncoder } from '../../types/puid'
+
+// n: 0123456789 01234567 89 01 23456 78901
+// c: 0123456789 ABCDEFGH JK MN PQRST VWXYZ
+
+export default (): PuidEncoder => {
+  const A = 'A'.charCodeAt(0)
+  const J = 'J'.charCodeAt(0)
+  const M = 'M'.charCodeAt(0)
+  const P = 'P'.charCodeAt(0)
+  const V = 'V'.charCodeAt(0)
+
+  return (n: number) => {
+    if (n < 10) return n
+    if (n < 18) return n - 10 + A
+    if (n < 20) return n - 18 + J
+    if (n < 22) return n - 20 + M
+    if (n < 27) return n - 22 + P
+    if (n < 31) return n - 27 + V
+    return NaN
+  }
+}

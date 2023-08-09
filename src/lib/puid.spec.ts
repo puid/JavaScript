@@ -200,7 +200,7 @@ test('Safe32 (count non-power of 2 with carry)', (t) => {
   t.is(safe32Id(), '2nNB')
 })
 
-test('puid safe32 entropyValues', (t) => {
+test('puid safe32', (t) => {
   const valuesBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x03, 0xb7, 0x3c])
   const entropyValues = (buf: Uint8Array) => buf.set(valuesBytes(buf.length))
 
@@ -294,6 +294,20 @@ test('puid from AlphaUpper', (t) => {
   t.is(alphaUpperId(), 'AFM')
 })
 
+test('puid from Base16', (t) => {
+  const base16Bytes = fixedBytes([0xc7, 0xc9, 0x00, 0x2a, 0x16, 0x32])
+  const base16Id = puidGenerator({
+    bits: 12,
+    chars: Chars.Base16,
+    entropyBytes: base16Bytes
+  })
+
+  t.is(base16Id(), 'C7C')
+  t.is(base16Id(), '900')
+  t.is(base16Id(), '2A1')
+  t.is(base16Id(), '632')
+})
+
 test('puid from Base32 chars (32 chars, 5 bits)', (t) => {
   const base32Bytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x00, 0x22])
   const base32Id = puidGenerator({ bits: 46, chars: Chars.Base32, entropyBytes: base32Bytes })
@@ -321,6 +335,16 @@ test('puid from Base32HexUpper chars (32 chars, 5 bits)', (t) => {
   t.is(base32HexUpperId(), 'UJM')
   t.is(base32HexUpperId(), 'GP0')
   t.is(base32HexUpperId(), 'ERJ')
+})
+
+test('puid Crockford32', (t) => {
+  const valuesBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x03, 0xb7, 0x3c])
+  const entropyValues = (buf: Uint8Array) => buf.set(valuesBytes(buf.length))
+
+  const valuesId = puidGenerator({ bits: 20, chars: Chars.Crockford32, entropyValues })
+  t.is(valuesId(), 'TBHY')
+  t.is(valuesId(), 'KPGS')
+  t.is(valuesId(), '0EVK')
 })
 
 test('puid from Decimal (10 chars)', (t) => {
@@ -437,6 +461,16 @@ test('puid from Symbol', (t) => {
   t.is(ere, 0.6)
   t.is(length, 13)
   t.is(symbolId().length, length)
+})
+
+test('puid WordSafe32', (t) => {
+  const valuesBytes = fixedBytes([0xd2, 0xe3, 0xe9, 0xda, 0x19, 0x03, 0xb7, 0x3c])
+  const entropyValues = (buf: Uint8Array) => buf.set(valuesBytes(buf.length))
+
+  const valuesId = puidGenerator({ bits: 20, chars: Chars.WordSafe32, entropyValues })
+  t.is(valuesId(), 'pHVw')
+  t.is(valuesId(), 'XgRm')
+  t.is(valuesId(), '2PqX')
 })
 
 test('Vowels (10 chars, 4 bits)', (t) => {

@@ -209,28 +209,47 @@ Example:
 
 ### <a name="Chars"></a>Chars
 
-There are 16 pre-defined character sets:
+There are 19 pre-defined character sets:
 
-| Name           | Characters                                                                                    |
-| :------------- | :-------------------------------------------------------------------------------------------- |
-| Alpha          | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz                                          |
-| AlphaLower     | abcdefghijklmnopqrstuvwxyz                                                                    |
-| AlphaUpper     | ABCDEFGHIJKLMNOPQRSTUVWXYZ                                                                    |
-| Alphanum       | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789                                |
-| AlphanumLower  | abcdefghijklmnopqrstuvwxyz0123456789                                                          |
-| AlphanumUpper  | ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789                                                          |
-| Base32         | 234567ABCDEFGHIJKLMNOPQRSTUVWXYZ                                                              |
-| Base32Hex      | 0123456789abcdefghijklmnopqrstuv                                                              |
-| base32HexUpper | 0123456789ABCDEFGHIJKLMNOPQRSTUV                                                              |
-| Decimal        | 0123456789                                                                                    |
-| Hex            | 0123456789abcdef                                                                              |
-| HexUpper       | 0123456789ABCDEF                                                                              |
-| SafeAscii      | !#$%&()\*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^\_abcdefghijklmnopqrstuvwxyz{\|}~ |
-| Safe32         | 2346789bdfghjmnpqrtBDFGHJLMNPQRT                                                              |
-| Safe64         | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-\_                             |
-| Symbol         | !#$%&()\*+,-./:;<=>?@[]^\_{\|}~                                                               |
+| Name              | Characters                                                                                    |
+| :---------------- | :-------------------------------------------------------------------------------------------- |
+| :alpha            | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz                                          |
+| :alpha_lower      | abcdefghijklmnopqrstuvwxyz                                                                    |
+| :alpha_upper      | ABCDEFGHIJKLMNOPQRSTUVWXYZ                                                                    |
+| :alphanum         | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789                                |
+| :alphanum_lower   | abcdefghijklmnopqrstuvwxyz0123456789                                                          |
+| :alphanum_upper   | ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789                                                          |
+| :base16           | 0123456789ABCDEF                                                                              |
+| :base32           | ABCDEFGHIJKLMNOPQRSTUVWXYZ234567                                                              |
+| :base32_hex       | 0123456789abcdefghijklmnopqrstuv                                                              |
+| :base32_hex_upper | 0123456789ABCDEFGHIJKLMNOPQRSTUV                                                              |
+| :crockford32      | 0123456789ABCDEFGHJKMNPQRSTVWXYZ                                                              |
+| :decimal          | 0123456789                                                                                    |
+| :hex              | 0123456789abcdef                                                                              |
+| :hex_upper        | 0123456789ABCDEF                                                                              |
+| :safe_ascii       | !#$%&()\*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^\_abcdefghijklmnopqrstuvwxyz{\|}~ |
+| :safe32           | 2346789bdfghjmnpqrtBDFGHJLMNPQRT                                                              |
+| :safe64           | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-\_                             |
+| :symbol           | !#$%&()\*+,-./:;<=>?@[]^\_{\|}~                                                               |
+| :wordSafe32       | 23456789CFGHJMPQRVWXcfghjmpqrvwx                                                              |
 
 Any string of up to 256 unique characters, including unicode, can be used for **`puid`** generation.
+
+#### Description of non-obvious character sets
+
+| Name              | Description                                                |
+| :---------------- | :--------------------------------------------------------- |
+| :base16           | https://datatracker.ietf.org/doc/html/rfc4648#section-8    |
+| :base32           | https://datatracker.ietf.org/doc/html/rfc4648#section-6    |
+| :base32_hex       | Lowercase of :base32_hex_upper                             |
+| :base32_hex_upper | https://datatracker.ietf.org/doc/html/rfc4648#section-7    |
+| :crockford32      | https://www.crockford.com/base32.html                      |
+| :safe_ascii       | Printable ascii that does not require escape in String     |
+| :safe32           | Alpha and numbers picked to reduce chance of English words |
+| :safe64           | https://datatracker.ietf.org/doc/html/rfc4648#section-5    |
+| :wordSafe32       | Alpha and numbers picked to reduce chance of English words |
+
+Note: :safe32 and :wordSafe32 are two different strategies for the same goal.
 
 [TOC](#TOC)
 
