@@ -183,6 +183,17 @@ test('dîngøsky chars (count power of 2 with carry)', (t) => {
   t.is(dingoskyUtf8Id(), 'ksk')
 })
 
+test('dîngøsky:￦ chars', (t) => {
+  const dingoskyDogBytes = fixedBytes([
+    0xec, 0xf9, 0xdb, 0x7a, 0x33, 0x3d, 0x21, 0x97, 0xa0, 0xc2, 0xbf, 0x92, 0x80, 0xdd, 0x2f, 0x57, 0x12, 0xc1, 0x1a,
+    0xef
+  ])
+  const dingoskyDogId = puidGenerator({ bits: 24, chars: 'dîngøsky:￦', entropyBytes: dingoskyDogBytes })
+
+  t.is(dingoskyDogId(), '￦gî￦￦nî￦')
+  t.is(dingoskyDogId(), 'ydkîsnsd')
+  t.is(dingoskyDogId(), 'îøsîndøk')
+})
 
 test('Safe32 (count non-power of 2 with carry)', (t) => {
   //    D    2    E    3    E    9    D    A    1    9    0    3    B    7    3    C

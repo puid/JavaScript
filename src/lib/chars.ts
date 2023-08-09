@@ -48,8 +48,9 @@ export const charsName = (chars: string): string => {
 }
 
 const validChar = (char: string): boolean => {
-  const codePointNonBreakSpace = 160
+  if (char.codePointAt(1)) return false
 
+  const codePointNonBreakSpace = 160
   const codePoint = codePointOf(char)
 
   if (codePoint < codePointOf('!')) return false
@@ -59,6 +60,8 @@ const validChar = (char: string): boolean => {
   if (char == '`') return false
   if (codePoint <= codePointOf('~')) return true
   if (codePoint < codePointNonBreakSpace) return false
+
+  if (char.codePointAt(1)) return false
 
   return true
 }
