@@ -1,4 +1,4 @@
-import { PuidEncoder } from "../../types/puid"
+import { PuidEncoder } from '../../types/puid'
 
 export default (uppercase = false): PuidEncoder => {
   const decimal = '0'.charCodeAt(0)

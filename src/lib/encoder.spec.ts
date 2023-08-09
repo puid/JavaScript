@@ -5,12 +5,12 @@ import encoder from './encoder'
 
 const chars_encoder = (t: ExecutionContext, chars: string) => {
   const chars_encoder = encoder(chars)
-  const codes = [...Array(chars.length).keys()].map(code => chars_encoder(code))
+  const codes = [...Array(chars.length).keys()].map((code) => chars_encoder(code))
   const encoded = String.fromCharCode(...codes)
   t.is(encoded, chars)
 }
 
-test('alpha() encoder chars', (t) => chars_encoder(t, Chars.Alpha))  
+test('alpha() encoder chars', (t) => chars_encoder(t, Chars.Alpha))
 test('alphaCase() encoder chars', (t) => chars_encoder(t, Chars.AlphaLower))
 test('alphaCase(true) encoder chars', (t) => chars_encoder(t, Chars.AlphaUpper))
 test('alphaNumEncoder() encoder chars', (t) => chars_encoder(t, Chars.AlphaNum))

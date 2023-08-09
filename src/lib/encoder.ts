@@ -22,13 +22,12 @@ export default (chars: string): PuidEncoder => {
   if (chars === Chars.Base32) return base32Encoder()
   if (chars === Chars.Base32Hex) return base32HexCaseEncoder()
   if (chars === Chars.Base32HexUpper) return base32HexCaseEncoder(true)
-  if (chars === Chars.Decimal) return decimalEncoder()  
+  if (chars === Chars.Decimal) return decimalEncoder()
   if (chars === Chars.Hex) return hexCaseEncoder()
   if (chars === Chars.HexUpper) return hexCaseEncoder(true)
   if (chars === Chars.Safe32) return safe32Encoder()
   if (chars === Chars.Safe64) return safe64Encoder()
   if (chars === Chars.SafeAscii) return safeAsciiEncoder()
   if (chars === Chars.Symbol) return symbolEncoder()
-
   return customEncoder(chars)
 }

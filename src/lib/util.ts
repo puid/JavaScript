@@ -4,11 +4,11 @@ import path from 'node:path'
 import { Chars } from '../lib/chars'
 
 export type DataParams = {
-  readonly binFile: string,
-  readonly testName: string,
-  readonly total: number,
-  readonly risk: number,
-  readonly chars: string,
+  readonly binFile: string
+  readonly testName: string
+  readonly total: number
+  readonly risk: number
+  readonly chars: string
   readonly count: number
 }
 
@@ -17,16 +17,16 @@ const fixedBytes = (arr: readonly number[]) => staticBytes(new Uint8Array(arr))
 const fileBytes = (binFile: string) => staticBytes(new Uint8Array(fs.readFileSync(binFile)))
 
 const staticBytes = (bytes: Uint8Array) => {
-    // eslint-disable-next-line functional/no-let
-    let offset = 0
-    return (n: number) => {
-      const subBytes = bytes.subarray(offset, n + offset)
-      offset += n
-      return subBytes
-    }
+  // eslint-disable-next-line functional/no-let
+  let offset = 0
+  return (n: number) => {
+    const subBytes = bytes.subarray(offset, n + offset)
+    offset += n
+    return subBytes
   }
+}
 
-const dataPath = (dataName: string, fileName: string) => 
+const dataPath = (dataName: string, fileName: string) =>
   path.join(__dirname, '..', '..', '..', 'data', dataName, fileName)
 
 const dataParams = (dataName: string): DataParams => {
@@ -47,7 +47,7 @@ const charsParam = (param: string) => {
   if (charsType === 'custom') {
     return charsDef
   }
-  switch(charsDef) {
+  switch (charsDef) {
     case 'alpha':
       return Chars.Alpha
     case 'alpha_lower':

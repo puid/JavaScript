@@ -1,4 +1,4 @@
-import { PuidEncoder } from "../../types/puid"
+import { PuidEncoder } from '../../types/puid'
 
 export default (): PuidEncoder => {
   const upper = 'A'.charCodeAt(0)
