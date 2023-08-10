@@ -34,6 +34,7 @@ test('valid custom characters', (t) => t.is(validChars('dingosky')[0], true))
 test('invalid characters', (t) => {
   t.regex(invalidChars('dingo sky'), /Invalid/)
   t.regex(invalidChars('dingo sky'), /Invalid/)
+  t.regex(invalidChars('dingo"sky'), /Invalid/)
   t.regex(invalidChars("dingo'sky"), /Invalid/)
   t.regex(invalidChars('dingo\\sky'), /Invalid/)
   t.regex(invalidChars('dingo`sky'), /Invalid/)

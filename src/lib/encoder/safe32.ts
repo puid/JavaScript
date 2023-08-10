@@ -1,5 +1,7 @@
 import { PuidEncoder } from '../../types/puid'
 
+import boundEncoder from './boundEncoder'
+
 // n: 012 3456 7 8 901 2 34 567 8 9 0 123 4 567 890 1
 // c: 234 6789 b d fgh j mn pqr t B D FGH J LMN PQR T
 
@@ -21,7 +23,7 @@ export default (): PuidEncoder => {
   const P = 'P'.charCodeAt(0)
   const T = 'T'.charCodeAt(0)
 
-  return (n: number) => {
+  const puidEncoder = (n: number) => {
     if (n < 3) return n + two
     if (n < 7) return n - 3 + six
     if (n === 7) return b
@@ -37,7 +39,8 @@ export default (): PuidEncoder => {
     if (n === 24) return J
     if (n < 28) return n - 25 + L
     if (n < 31) return n - 28 + P
-    if (n === 31) return T
-    return NaN
+    return T
   }
+
+  return boundEncoder(puidEncoder, 32)
 }

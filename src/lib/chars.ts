@@ -17,7 +17,7 @@ export enum Chars {
   Crockford32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ',
   Decimal = '0123456789',
   Hex = '0123456789abcdef',
-  HexUpper = '0123456789ABCDEF',
+  HexUpper = Base16,
   SafeAscii = '!#$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_abcdefghijklmnopqrstuvwxyz{|}~',
   Safe32 = '2346789bdfghjmnpqrtBDFGHJLMNPQRT',
   Safe64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_',
@@ -38,7 +38,6 @@ export const charsName = (chars: string): string => {
   if (chars === Chars.Base32HexUpper) return 'base32HexUpper'
   if (chars === Chars.Crockford32) return 'crockford32'
   if (chars === Chars.Hex) return 'hex'
-  if (chars === Chars.HexUpper) return 'hexUpper'
   if (chars === Chars.Safe32) return 'safe32'
   if (chars === Chars.Safe64) return 'safe64'
   if (chars === Chars.SafeAscii) return 'safeAscii'
@@ -60,8 +59,6 @@ const validChar = (char: string): boolean => {
   if (char == '`') return false
   if (codePoint <= codePointOf('~')) return true
   if (codePoint < codePointNonBreakSpace) return false
-
-  if (char.codePointAt(1)) return false
 
   return true
 }

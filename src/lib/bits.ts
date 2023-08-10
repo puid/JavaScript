@@ -1,7 +1,7 @@
 import { EntropyByBytes, EntropyByValues, EntropyFunction, PuidBitsMuncher } from '../types/puid'
 
-import encoder from './encoder'
 import { entropyBitsPerChar } from './entropy'
+import puidEncoder from './puidEncoder'
 
 const { ceil, floor, log2, round } = Math
 
@@ -139,7 +139,7 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
   const entropyBuffer = new ArrayBuffer(bufferLen)
   const entropyBytes = new Uint8Array(entropyBuffer)
 
-  const charsEncoder = encoder(puidChars)
+  const charsEncoder = puidEncoder(puidChars)
   const nChars = puidChars.length
   const mapper = new Array(puidLen).fill(0).map((zero, ndx) => zero + ndx)
 
