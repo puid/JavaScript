@@ -1,5 +1,32 @@
 # Changelog
 
+## v1.3.0 (2023-08-10)
+
+### Fixes
+
+- Further optimize bit shifts
+- Change order of Base32 characters to match RFC 4648
+
+### Additions
+
+- Add more PUID cross-repo data tests
+- Add predefined characters
+  - Base16 from RFC 4648
+  - Crockford32
+  - WordSafe32
+
+Note: Base16 chars are the same as HexUpper. If HexUpper chars are used, Puid info will report the name as `base16`.
+
+### Changes
+
+- Reject chars with ASCII range code point between tilde and inverted bang
+- Reject unicode chars with code point beyond 0xFFFF
+- Bound all encoders to report NaN if called to encode an number outside the range of specified characters. The `encode` call is meant to be internal and this change should not affect external code.
+
+### Cleanup
+
+- General code cleanup
+
 ## v1.2.0 (2022-08-08)
 
 ### Fixes
