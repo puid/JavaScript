@@ -27,7 +27,7 @@ export default (): PuidEncoder => {
     if (n === 12) return J
     if (n === 13) return M
     if (n < 17) return n - 14 + P
-    if (n < 20) return n - 16 + V
+    if (n < 20) return n - 17 + V
     if (n === 20) return c
     if (n < 24) return n - 21 + f
     if (n === 24) return j

@@ -44,6 +44,7 @@ test('puid total/risk and bits', (t) => {
 const puidGenerator = (config?: PuidConfig): Puid => {
   const { generator } = puid(config)
   if (generator) return generator
+
   const cxError = () => 'CxError'
   // eslint-disable-next-line functional/immutable-data
   cxError.info = {
