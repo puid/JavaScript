@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.3.1 (2023-08-11)
+
+### Fixes
+
+- Encoders for char sets added in 1.3.0 were defaulting to the basic custom chars encoder rather than optimized versions.
+
 ## v1.3.0 (2023-08-10)
 
 ### Fixes
