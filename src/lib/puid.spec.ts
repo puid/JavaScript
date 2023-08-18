@@ -185,15 +185,15 @@ test('dîngøsky chars (count power of 2 with carry)', (t) => {
 })
 
 test('dîngøsky:￦ chars', (t) => {
-  const dingoskyDogBytes = fixedBytes([
+  const unicodeBytes = fixedBytes([
     0xec, 0xf9, 0xdb, 0x7a, 0x33, 0x3d, 0x21, 0x97, 0xa0, 0xc2, 0xbf, 0x92, 0x80, 0xdd, 0x2f, 0x57, 0x12, 0xc1, 0x1a,
     0xef
   ])
-  const dingoskyDogId = puidGenerator({ bits: 24, chars: 'dîngøsky:￦', entropyBytes: dingoskyDogBytes })
+  const unicodeId = puidGenerator({ bits: 24, chars: 'dîngøsky:￦', entropyBytes: unicodeBytes })
 
-  t.is(dingoskyDogId(), '￦gî￦￦nî￦')
-  t.is(dingoskyDogId(), 'ydkîsnsd')
-  t.is(dingoskyDogId(), 'îøsîndøk')
+  t.is(unicodeId(), '￦gî￦￦nî￦')
+  t.is(unicodeId(), 'ydkîsnsd')
+  t.is(unicodeId(), 'îøsîndøk')
 })
 
 test('Safe32 (count non-power of 2 with carry)', (t) => {
