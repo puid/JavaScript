@@ -2,8 +2,12 @@ import { PuidEncoder } from '../../types/puid'
 
 import boundEncoder from './boundEncoder'
 
-// n: 0123456789 01234567 89 01 23456 78901
-// c: 0123456789 ABCDEFGH JK MN PQRST VWXYZ
+// chars: 0123456789ABCDEFGHJKMNPQRSTVWXYZ
+//   ref: https://www.crockford.com/base32.html
+//
+// Mapping
+//   n: 0123456789 01234567 89 01 23456 78901
+//   c: 0123456789 ABCDEFGH JK MN PQRST VWXYZ
 
 export default (): PuidEncoder => {
   const zero = '0'.charCodeAt(0)

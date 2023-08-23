@@ -2,8 +2,12 @@ import { PuidEncoder } from '../../types/puid'
 
 import boundEncoder from './boundEncoder'
 
-// n: 01234567 8 901 2 3 456 789 0 123 4 5 678 901
-// c: 23456789 C FGH J M PQR VWX c fgh j m pqr vwx
+// chars: 23456789CFGHJMPQRVWXcfghjmpqrvwx
+//   ref: Alpha and numbers picked to reduce chance of English words
+//
+// Mapping
+//   n: 01234567 8 901 2 3 456 789 0 123 4 5 678 901
+//   c: 23456789 C FGH J M PQR VWX c fgh j m pqr vwx
 
 export default (): PuidEncoder => {
   const two = '2'.charCodeAt(0)

@@ -2,6 +2,8 @@ import { PuidEncoder } from '../../types/puid'
 
 import boundEncoder from './boundEncoder'
 
+// chars: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+
 export default (): PuidEncoder => {
   const upper = 'A'.charCodeAt(0)
   const lower = 'a'.charCodeAt(0)

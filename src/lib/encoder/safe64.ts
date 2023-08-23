@@ -2,8 +2,12 @@ import { PuidEncoder } from '../../types/puid'
 
 import boundEncoder from './boundEncoder'
 
-// n: 01234567890123456789012345 67890123456789012345678901 2345678901 2 3
-// c: ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789 - _
+// chars: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_
+//   ref: https://datatracker.ietf.org/doc/html/rfc4648#section-5
+//
+// Mapping
+//   n: 01234567890123456789012345 67890123456789012345678901 2345678901 2 3
+//   c: ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789 - _
 
 export default (): PuidEncoder => {
   const A = 'A'.charCodeAt(0)

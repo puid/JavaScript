@@ -2,8 +2,11 @@ import { PuidEncoder } from '../../types/puid'
 
 import boundEncoder from './boundEncoder'
 
-// n: 0 1234 56789012 3456789 0 123 4567
-// c: ! #$%& ()*+,-./ :;<=>?@ [ ]^_ {|}~
+// chars: !#$%&()*+,-./:;<=>?@[]^_{\|}~
+//
+// Mapping
+//   n: 0 1234 56789012 3456789 0 123 4567
+//   c: ! #$%& ()*+,-./ :;<=>?@ [ ]^_ {|}~
 
 export default (): PuidEncoder => {
   const bang = '!'.charCodeAt(0)

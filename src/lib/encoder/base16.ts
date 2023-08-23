@@ -2,6 +2,9 @@ import { PuidEncoder } from '../../types/puid'
 
 import boundEncoder from './boundEncoder'
 
+// chars: 0123456789ABCDEF
+//   ref: https://datatracker.ietf.org/doc/html/rfc4648#section-8
+
 export default (): PuidEncoder => {
   const decimal = '0'.charCodeAt(0)
   const alpha = 'A'.charCodeAt(0)
