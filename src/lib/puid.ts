@@ -101,15 +101,14 @@ export default (puidConfig: PuidConfig = {}): PuidResult => {
 
   const puid: Puid = (): string => bitsMuncher()
 
-   
-  puid.info = {
+  puid.info = Object.freeze({
     bits: round2(puidBitsPerChar * puidLen),
     bitsPerChar: round2(puidBitsPerChar),
     chars: puidChars,
     charsName: charsName(puidChars),
     ere: round2(ere),
     length: puidLen
-  }
+  })
 
   return { generator: puid }
 }
