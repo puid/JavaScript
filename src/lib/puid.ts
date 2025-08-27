@@ -11,20 +11,22 @@ const round2 = (f: number): number => round(f * 100) / 100
 const { ceil, round } = Math
 
 const selectEntropyFunction = (puidConfig: PuidConfig): EntropyFunction => {
-  if (puidConfig.entropyValues) {
-    return [true, puidConfig.entropyValues as EntropyByValues]
-  } else if (puidConfig.entropyBytes) {
-    return [false, puidConfig.entropyBytes as EntropyByBytes]
-  } else {
-    // Prefer Web Crypto in environments where it's available
-    const g: any = globalThis as any
-    const gv = g?.crypto?.getRandomValues as ((buf: Uint8Array) => Uint8Array) | undefined
-    if (typeof gv === 'function') {
-      return [true, (buffer: Uint8Array) => { gv.call(g.crypto, buffer) }]
-    }
-    // Fallback to Node's randomBytes
-    return [false, randomBytes]
-  }
+  if (puidConfig.entropyValues) return [true, puidConfig.entropyValues as EntropyByValues]
+  if (puidConfig.entropyBytes) return [false, puidConfig.entropyBytes as EntropyByBytes]
+
+  // Prefer Web Crypto in environments where it's available
+  const globalScope: any = globalThis as any
+  const getRandomValuesFn = globalScope?.crypto?.getRandomValues as ((buf: Uint8Array) => Uint8Array) | undefined
+  if (typeof getRandomValuesFn === 'function')
+    return [
+      true,
+      (buffer: Uint8Array) => {
+        getRandomValuesFn.call(globalScope.crypto, buffer)
+      }
+    ]
+
+  // Fallback to Node's randomBytes
+  return [false, randomBytes]
 }
 
 /**
@@ -103,7 +105,7 @@ export default (puidConfig: PuidConfig = {}): PuidResult => {
 
   const puid: Puid = (): string => bitsMuncher()
 
-  // eslint-disable-next-line functional/immutable-data
+   
   puid.info = {
     bits: round2(puidBitsPerChar * puidLen),
     bitsPerChar: round2(puidBitsPerChar),

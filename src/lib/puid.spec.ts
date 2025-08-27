@@ -46,7 +46,7 @@ const puidGenerator = (config?: PuidConfig): Puid => {
   if (generator) return generator
 
   const cxError = () => 'CxError'
-  // eslint-disable-next-line functional/immutable-data
+   
   cxError.info = {
     bits: -1,
     bitsPerChar: -1,

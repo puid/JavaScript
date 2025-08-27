@@ -17,7 +17,7 @@ const fixedBytes = (arr: readonly number[]) => staticBytes(new Uint8Array(arr))
 const fileBytes = (binFile: string) => staticBytes(new Uint8Array(fs.readFileSync(binFile)))
 
 const staticBytes = (bytes: Uint8Array) => {
-  // eslint-disable-next-line functional/no-let
+   
   let offset = 0
   return (n: number) => {
     const subBytes = bytes.subarray(offset, n + offset)

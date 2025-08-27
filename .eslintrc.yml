@@ -36,6 +36,13 @@ rules:
     - newlines-between: always
       alphabetize:
         order: asc
+  max-len:
+    - error
+    - code: 120
+      ignoreUrls: true
+      ignoreStrings: true
+      ignoreTemplateLiterals: true
+      ignoreRegExpLiterals: true
   semi: 0
   sort-imports:
     - error

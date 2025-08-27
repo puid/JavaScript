@@ -134,7 +134,7 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
   const nBytesPerPuid = ceil(nBitsPerPuid / 8)
 
   const bufferLen = nBytesPerPuid + 1
-  // eslint-disable-next-line functional/no-let
+   
   let entropyOffset = 8 * bufferLen
   const entropyBuffer = new ArrayBuffer(bufferLen)
   const entropyBytes = new Uint8Array(entropyBuffer)

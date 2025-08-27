@@ -1,7 +1,7 @@
-/* eslint-disable functional/prefer-readonly-type */
+ 
 
 export type EntropyByBytes = (nBytes: number) => Uint8Array
-// eslint-disable-next-line functional/no-return-void
+ 
 export type EntropyByValues = (buffer: Uint8Array) => void
 export type PuidConfig = {
   readonly chars?: string
@@ -36,7 +36,7 @@ export type PuidInfo = {
   readonly length: number
 }
 
-// eslint-disable-next-line functional/no-mixed-type
+ 
 export type Puid = {
   (): string
   info: PuidInfo
