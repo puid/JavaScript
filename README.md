@@ -45,7 +45,7 @@ Random string generation can be thought of as a _transformation_ of some random 
 
    What characters are used in the ID?
 
-   > `puid-js` provides 16 pre-defined character sets, as well as allows custom characters, including Unicode
+  > `puid-js` provides 19 pre-defined character sets, as well as allows custom characters, including Unicode
 
 3. **ID randomness**
 
@@ -57,7 +57,7 @@ Random string generation can be thought of as a _transformation_ of some random 
 
 ### <a name="Usage"></a>Usage
 
-Creating a random ID generator using `puid-js` is a simple as:
+Creating a random ID generator using `puid-js` is as simple as:
 
 ```js
 const { puid } = require('puid-js')
@@ -86,7 +86,7 @@ randId()
 
 **ID Characters**
 
-By default, `puid-js` use the [RFC 4648](https://tools.ietf.org/html/rfc4648#section-5) file system & URL safe characters. The `chars` option can by used to specify any of 16 [pre-defined character sets](#Chars) or custom characters, including Unicode:
+By default, `puid-js` uses the [RFC 4648](https://tools.ietf.org/html/rfc4648#section-5) file system & URL safe characters. The `chars` option can be used to specify any of 19 [pre-defined character sets](#Chars) or custom characters, including Unicode:
 
 ```js
 const { Chars, puid } = require('puid-js')
@@ -138,10 +138,23 @@ token()
 yarn add puid-js
 ```
 
+Requires Node.js >= 18.
+
 #### NPM
 
 ```bash
 npm install puid-js
+```
+
+### Browser (ESM)
+
+```html
+<script type="module">
+  import { puid, Chars } from 'puid-js'
+  // Use Web Crypto as the entropy source in browsers
+  const { generator: id } = puid({ entropyValues: window.crypto.getRandomValues, chars: Chars.Safe32 })
+  console.log(id())
+</script>
 ```
 
 ### <a name="API"></a>API
@@ -213,7 +226,7 @@ There are 19 pre-defined character sets:
 
 | Name           | Characters                                                                                    |
 | :------------- | :-------------------------------------------------------------------------------------------- |
-| ALpha          | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz                                          |
+| Alpha          | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz                                          |
 | AlphaLower     | abcdefghijklmnopqrstuvwxyz                                                                    |
 | AlphaUpper     | ABCDEFGHIJKLMNOPQRSTUVWXYZ                                                                    |
 | AlphaNum       | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789                                |
