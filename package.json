@@ -60,7 +60,7 @@
     "version": "standard-version"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=18"
   },
   "devDependencies": {
     "@ava/typescript": "^6.0.0",
