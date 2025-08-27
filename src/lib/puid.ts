@@ -16,15 +16,10 @@ const selectEntropyFunction = (puidConfig: PuidConfig): EntropyFunction => {
   if (puidConfig.entropyBytes) return [false, puidConfig.entropyBytes as EntropyByBytes]
 
   // Prefer Web Crypto in environments where it's available
-  const globalScope: any = globalThis as any
-  const getRandomValuesFn = globalScope?.crypto?.getRandomValues as ((buf: Uint8Array) => Uint8Array) | undefined
-  if (typeof getRandomValuesFn === 'function')
-    return [
-      true,
-      (buffer: Uint8Array) => {
-        getRandomValuesFn.call(globalScope.crypto, buffer)
-      }
-    ]
+  type CryptoLike = { getRandomValues?: (b: Uint8Array) => void }
+  const cryptoObj = (globalThis as { crypto?: CryptoLike }).crypto
+  const gv = cryptoObj?.getRandomValues?.bind(cryptoObj) as ((b: Uint8Array) => void) | undefined
+  if (gv) return [true, gv]
 
   // Fallback to Node's randomBytes
   return [false, randomBytes]

@@ -13,9 +13,10 @@ const selectEntropyFunction = (puidConfig: PuidConfig): EntropyFunction => {
   if (puidConfig.entropyValues) return [true, puidConfig.entropyValues as EntropyByValues]
   if (puidConfig.entropyBytes) return [false, puidConfig.entropyBytes as EntropyByBytes]
 
-  const g: any = globalThis as any
-  const gv = g?.crypto?.getRandomValues as ((buf: Uint8Array) => Uint8Array) | undefined
-  if (typeof gv === 'function') return [true, (buffer: Uint8Array) => { gv.call(g.crypto, buffer) }]
+  type CryptoLike = { getRandomValues?: (b: Uint8Array) => void }
+  const cryptoObj = (globalThis as { crypto?: CryptoLike }).crypto
+  const gv = cryptoObj?.getRandomValues?.bind(cryptoObj) as ((b: Uint8Array) => void) | undefined
+  if (gv) return [true, gv]
 
   // No Node randomBytes fallback in web entry
   throw new Error('No entropy source available: provide entropyValues or ensure Web Crypto is available')
@@ -41,7 +42,7 @@ export default (puidConfig: PuidConfig = {}): PuidResult => {
 
   // In web build, if no entropy provided, require Web Crypto
   if (!puidConfig.entropyBytes && !puidConfig.entropyValues) {
-    const hasWebCrypto = typeof (globalThis as any)?.crypto?.getRandomValues === 'function'
+    const hasWebCrypto = typeof (globalThis as { crypto?: { getRandomValues?: (b: Uint8Array) => void } }).crypto?.getRandomValues === 'function'
     if (!hasWebCrypto) return { error: new Error('Web Crypto getRandomValues not available. Provide entropyValues.') }
   }
 
