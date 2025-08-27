@@ -1,11 +1,58 @@
 {
   "name": "puid-js",
-  "version": "1.3.1",
+  "version": "2.0.0",
   "description": "Simple, fast, flexible and efficient generation of probably unique identifiers (`puid`, aka random strings) of intuitively specified entropy using pre-defined or custom characters, including unicode",
   "main": "build/main/index.js",
-  "typings": "build/main/index.d.ts",
+  "types": "build/main/index.d.ts",
   "module": "build/module/index.js",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "browser": {
+        "types": "./build/main/web.d.ts",
+        "require": "./build/main/web.js",
+        "import": "./build/module/web.mjs"
+      },
+      "types": "./build/main/index.d.ts",
+      "require": "./build/main/index.js",
+      "import": "./build/module/index.mjs"
+    },
+    "./web": {
+      "types": "./build/main/web.d.ts",
+      "require": "./build/main/web.js",
+      "import": "./build/module/web.mjs"
+    },
+    "./chars": {
+      "types": "./build/main/lib/chars.d.ts",
+      "require": "./build/main/lib/chars.js",
+      "import": "./build/module/lib/chars.mjs"
+    },
+    "./entropy": {
+      "types": "./build/main/lib/entropy.d.ts",
+      "require": "./build/main/lib/entropy.js",
+      "import": "./build/module/lib/entropy.mjs"
+    },
+    "./puid": {
+      "types": "./build/main/lib/puid.d.ts",
+      "require": "./build/main/lib/puid.js",
+      "import": "./build/module/lib/puid.mjs"
+    },
+    "./generate": {
+      "types": "./build/main/generate.d.ts",
+      "require": "./build/main/generate.js",
+      "import": "./build/module/generate.mjs"
+    },
+    "./package.json": "./package.json"
+  },
   "repository": "https://github.com/puid/JavaScript",
+  "bugs": {
+    "url": "https://github.com/puid/JavaScript/issues"
+  },
+  "homepage": "https://github.com/puid/JavaScript#readme",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "license": "MIT",
   "keywords": [
     "random",
@@ -17,11 +64,10 @@
     "token"
   ],
   "scripts": {
-    "build": "run-p build:*",
-    "build:declarations": "tsc src/index.ts --outFile build/main/index.d.ts --declaration --emitDeclarationOnly",
+    "build": "yarn run build:main && yarn run build:module",
     "build:main": "rm -rf ./build/main && tsc",
-    "build:module": "tsc -p tsconfig.module.json",
-    "build:pack": "yarn build:main && rm -f build/main/lib/**/*.d.ts && npm pack",
+    "build:module": "tsc -p tsconfig.module.json && node scripts/build/mjsify.cjs",
+    "build:pack": "yarn build && npm pack",
     "build:test": "rm -rf ./build/test && tsc -p tsconfig.test.json",
     "check-cli": "run-s test diff-integration-tests check-integration-tests",
     "check-integration-tests": "run-s check-integration-test:*",
@@ -48,33 +94,38 @@
     "test:unit": "yarn test:clean && yarn build:test && nyc --silent ava",
     "watch:build": "tsc -p tsconfig.json -w",
     "watch:test": "nyc --silent ava --watch",
-    "version": "standard-version"
+    "bench": "yarn build && node scripts/bench/index.mjs",
+    "pack:verify": "npm pack --json | node -e \"let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s)[0];console.log(j.filename);for(const f of j.files) console.log(f.path)})\"",
+    "version": "standard-version",
+    "prepublishOnly": "yarn build"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=18"
   },
   "devDependencies": {
-    "@ava/typescript": "^1.1.1",
-    "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "@typescript-eslint/eslint-plugin": "^4.0.1",
-    "@typescript-eslint/parser": "^4.0.1",
-    "ava": "^3.12.1",
-    "codecov": "^3.5.0",
+    "@ava/typescript": "^6.0.0",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@types/node": "^24.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "ava": "^6.4.1",
+    "codecov": "^3.8.3",
     "cz-conventional-changelog": "^3.3.0",
-    "eslint": "^7.8.0",
-    "eslint-config-prettier": "^6.11.0",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-eslint-comments": "^3.2.0",
-    "eslint-plugin-functional": "^3.0.2",
-    "eslint-plugin-import": "^2.22.0",
-    "gh-pages": "^3.1.0",
+    "eslint-plugin-functional": "^9.0.2",
+    "eslint-plugin-import": "^2.32.0",
+    "gh-pages": "^6.3.0",
     "npm-run-all": "^4.1.5",
-    "nyc": "^15.1.0",
-    "open-cli": "^6.0.1",
-    "prettier": "^2.1.1",
-    "standard-version": "^9.0.0",
-    "ts-node": "^9.0.0",
-    "typedoc": "^0.19.0",
-    "typescript": "^4.5.0"
+    "nyc": "^17.1.0",
+    "open-cli": "^8.0.0",
+    "prettier": "^3.6.2",
+    "standard-version": "^9.5.0",
+    "tinybench": "^5.0.1",
+    "ts-node": "^10.9.2",
+    "typedoc": "^0.28.11",
+    "typescript": "^5.9.2"
   },
   "files": [
     "build/main",
@@ -82,13 +133,14 @@
     "!**/*.spec.*",
     "!**/*.json",
     "CHANGELOG.md",
-    "LICENSE",
+    "LICENSE.txt",
     "README.md"
   ],
   "ava": {
     "failFast": true,
     "timeout": "60s",
     "typescript": {
+      "compile": "tsc",
       "rewritePaths": {
         "src/": "build/test/"
       }
@@ -115,5 +167,6 @@
       "src/lib/prngBytes.ts",
       "src/lib/util.ts"
     ]
-  }
+  },
+  "packageManager": "yarn@4.9.4+sha512.7b1cb0b62abba6a537b3a2ce00811a843bea02bcf53138581a6ae5b1bf563f734872bd47de49ce32a9ca9dcaff995aa789577ffb16811da7c603dcf69e73750b"
 }

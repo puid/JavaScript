@@ -17,7 +17,7 @@ const fixedBytes = (arr: readonly number[]) => staticBytes(new Uint8Array(arr))
 const fileBytes = (binFile: string) => staticBytes(new Uint8Array(fs.readFileSync(binFile)))
 
 const staticBytes = (bytes: Uint8Array) => {
-  // eslint-disable-next-line functional/no-let
+   
   let offset = 0
   return (n: number) => {
     const subBytes = bytes.subarray(offset, n + offset)
@@ -33,19 +33,19 @@ const dataParams = (dataName: string): DataParams => {
   const paramsPath = dataPath(dataName, 'params')
   const params = fs.readFileSync(paramsPath, 'utf-8').split('\n')
   return {
-    binFile: dataPath('', params[0]),
-    testName: params[1],
-    total: parseInt(params[2]),
-    risk: parseFloat(params[3]),
-    chars: charsParam(params[4]),
-    count: parseInt(params[5])
+    binFile: dataPath('', params[0]!),
+    testName: params[1]!,
+    total: parseInt(params[2]!),
+    risk: parseFloat(params[3]!),
+    chars: charsParam(params[4]!),
+    count: parseInt(params[5]!)
   }
 }
 
-const charsParam = (param: string) => {
+const charsParam = (param: string): string => {
   const [charsType, charsDef] = param.split(':')
   if (charsType === 'custom') {
-    return charsDef
+    return charsDef ?? 'Error'
   }
   switch (charsDef) {
     case 'alpha':

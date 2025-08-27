@@ -1,5 +1,40 @@
 # Changelog
 
+## v2.0.0 (2025-08-27)
+
+### Breaking
+
+- Raise Node.js engines requirement to >=18
+- Introduce exports map and ESM/browser export conditions; deep imports may break depending on consumers' bundlers/resolvers
+
+### Features
+
+- New browser-friendly entry point (`import { puid } from 'puid-js/web'`)
+- Add `generate(config?)` convenience function
+
+### Fixes
+
+- Browser-safe ERE computation via new `byteLength` helper (uses TextEncoder in browsers)
+- Correct ESM `.mjs` and browser export conditions
+
+### Performance
+
+- Reduce allocations on the power-of-two path in `bits` by replacing map with a preallocated loop
+- Cache `bitShifts` per charset to avoid recomputation
+
+### Refactor/Types
+
+- Narrow `EntropyFunction` to a discriminated union and remove casts in `fillEntropy`
+- Improve Web Crypto detection and binding
+- Freeze `puid.info` for safer consumption
+
+### Build/Tooling/Docs
+
+- Pin Yarn 4.9.4 and add CI/release workflows
+- Raise TypeScript targets, enable strict typing, add subpath exports and npm metadata
+- Add tinybench micro-benchmark and Node ESM consumer example
+- Documentation: add "Migrating from UUID v4" section
+
 ## v1.3.1 (2023-08-11)
 
 ### Fixes

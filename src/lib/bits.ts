@@ -26,7 +26,7 @@ type BitShifts = readonly BitShift[]
 //
 // Only two bits are necessary to determine 100100 < 110010
 //
-const bitShifts = (chars: string): BitShifts => {
+const computeBitShifts = (chars: string): BitShifts => {
   const nBitsPerChar = bitsPerChar(chars)
   const baseValue = chars.length % 2 == 0 ? chars.length - 1 : chars.length
   const baseBitShift: BitShift = [baseValue, ceil(nBitsPerChar)]
@@ -50,6 +50,15 @@ const bitShifts = (chars: string): BitShifts => {
       },
       [baseBitShift]
     )
+}
+
+const bitShiftsCache = new Map<string, BitShifts>()
+const bitShifts = (chars: string): BitShifts => {
+  const cached = bitShiftsCache.get(chars)
+  if (cached) return cached
+  const shifts = computeBitShifts(chars)
+  bitShiftsCache.set(chars, shifts)
+  return shifts
 }
 
 const entropyByBytes = (skipBytes: number, entropyBuffer: ArrayBuffer, sourceBytes: EntropyByBytes) => {
@@ -79,14 +88,14 @@ const fillEntropy = (entropyOffset: number, entropyBuffer: ArrayBuffer, entropyF
   const nEntropyBytes = entropyBytes.length
   const nEntropyBits = 8 * nEntropyBytes
 
-  const [byValues, entropySource] = entropyFunction
+  const { byValues, source } = entropyFunction
 
   if (entropyOffset === nEntropyBits) {
     // No carry
     if (byValues) {
-      entropyByValues(0, entropyBuffer, entropySource as EntropyByValues)
+      entropyByValues(0, entropyBuffer, source)
     } else {
-      entropyByBytes(0, entropyBuffer, entropySource as EntropyByBytes)
+      entropyByBytes(0, entropyBuffer, source)
     }
   } else {
     // Handle carry
@@ -101,9 +110,9 @@ const fillEntropy = (entropyOffset: number, entropyBuffer: ArrayBuffer, entropyF
 
     // Fill right bytes with new random values
     if (byValues) {
-      entropyByValues(nUnusedBytes, entropyBuffer, entropySource as EntropyByValues)
+      entropyByValues(nUnusedBytes, entropyBuffer, source)
     } else {
-      entropyByBytes(nUnusedBytes, entropyBuffer, entropySource as EntropyByBytes)
+      entropyByBytes(nUnusedBytes, entropyBuffer, source)
     }
   }
 
@@ -112,14 +121,14 @@ const fillEntropy = (entropyOffset: number, entropyBuffer: ArrayBuffer, entropyF
 
 const valueAt = (offset: number, nBits: number, bytes: Uint8Array): number => {
   const lByteNdx = floor(offset / 8)
-  const lByte = bytes[lByteNdx]
+  const lByte = bytes[lByteNdx]!
   const lBitNum = offset % 8
 
   if (lBitNum + nBits <= 8) {
     return ((lByte << lBitNum) & 0xff) >> (8 - nBits)
   }
 
-  const rByte = bytes[lByteNdx + 1]
+  const rByte = bytes[lByteNdx + 1]!
   const rBitNum = lBitNum + nBits - 8
 
   const lValue = ((lByte << lBitNum) & 0xff) >> (lBitNum - rBitNum)
@@ -134,7 +143,7 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
   const nBytesPerPuid = ceil(nBitsPerPuid / 8)
 
   const bufferLen = nBytesPerPuid + 1
-  // eslint-disable-next-line functional/no-let
+   
   let entropyOffset = 8 * bufferLen
   const entropyBuffer = new ArrayBuffer(bufferLen)
   const entropyBytes = new Uint8Array(entropyBuffer)
@@ -147,9 +156,12 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
   if (isPow2(nChars)) {
     return () => {
       entropyOffset = fillEntropy(entropyOffset, entropyBuffer, entropyFunction)
-      const codes = mapper.map((ndx: number) =>
-        charsEncoder(valueAt(entropyOffset + ndx * nBitsPerChar, nBitsPerChar, entropyBytes))
-      )
+      const codes = new Array<number>(puidLen)
+      for (let i = 0; i < puidLen; i++) {
+        codes[i] = charsEncoder(
+          valueAt(entropyOffset + i * nBitsPerChar, nBitsPerChar, entropyBytes)
+        )
+      }
       entropyOffset += nBitsPerPuid
       return String.fromCharCode(...codes)
     }

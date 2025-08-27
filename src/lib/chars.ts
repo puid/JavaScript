@@ -25,26 +25,27 @@ export enum Chars {
   WordSafe32 = '23456789CFGHJMPQRVWXcfghjmpqrvwx'
 }
 
-export const charsName = (chars: string): string => {
-  if (chars === Chars.Alpha) return 'alpha'
-  if (chars === Chars.AlphaLower) return 'alphaLower'
-  if (chars === Chars.AlphaUpper) return 'alphaUpper'
-  if (chars === Chars.AlphaNum) return 'alphaNum'
-  if (chars === Chars.AlphaNumLower) return 'alphaNumLower'
-  if (chars === Chars.AlphaNumUpper) return 'alphaNumUpper'
-  if (chars === Chars.Base16) return 'base16'
-  if (chars === Chars.Base32) return 'base32'
-  if (chars === Chars.Base32Hex) return 'base32Hex'
-  if (chars === Chars.Base32HexUpper) return 'base32HexUpper'
-  if (chars === Chars.Crockford32) return 'crockford32'
-  if (chars === Chars.Hex) return 'hex'
-  if (chars === Chars.Safe32) return 'safe32'
-  if (chars === Chars.Safe64) return 'safe64'
-  if (chars === Chars.SafeAscii) return 'safeAscii'
-  if (chars === Chars.Symbol) return 'symbol'
-  if (chars === Chars.WordSafe32) return 'wordSafe32'
-  return 'custom'
+const CHARS_NAME_MAP: Record<string, string> = {
+  [Chars.Alpha]: 'alpha',
+  [Chars.AlphaLower]: 'alphaLower',
+  [Chars.AlphaUpper]: 'alphaUpper',
+  [Chars.AlphaNum]: 'alphaNum',
+  [Chars.AlphaNumLower]: 'alphaNumLower',
+  [Chars.AlphaNumUpper]: 'alphaNumUpper',
+  [Chars.Base16]: 'base16',
+  [Chars.Base32]: 'base32',
+  [Chars.Base32Hex]: 'base32Hex',
+  [Chars.Base32HexUpper]: 'base32HexUpper',
+  [Chars.Crockford32]: 'crockford32',
+  [Chars.Hex]: 'hex',
+  [Chars.Safe32]: 'safe32',
+  [Chars.Safe64]: 'safe64',
+  [Chars.SafeAscii]: 'safeAscii',
+  [Chars.Symbol]: 'symbol',
+  [Chars.WordSafe32]: 'wordSafe32'
 }
+
+export const charsName = (chars: string): string => CHARS_NAME_MAP[chars] ?? 'custom'
 
 const validChar = (char: string): boolean => {
   if (char.codePointAt(1)) return false

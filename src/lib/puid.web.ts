@@ -1,11 +1,9 @@
-import { randomBytes } from 'node:crypto'
-
 import { EntropyFunction, Puid, PuidConfig, PuidResult } from '../types/puid'
 
 import muncher from './bits'
-import { byteLength } from './byteLength'
 import { Chars, charsName, validChars } from './chars'
 import { entropyBits, entropyBitsPerChar } from './entropy'
+import { byteLength } from './byteLength'
 
 const round2 = (f: number): number => round(f * 100) / 100
 
@@ -15,66 +13,19 @@ const selectEntropyFunction = (puidConfig: PuidConfig): EntropyFunction => {
   if (puidConfig.entropyValues) return { byValues: true, source: puidConfig.entropyValues }
   if (puidConfig.entropyBytes) return { byValues: false, source: puidConfig.entropyBytes }
 
-  // Prefer Web Crypto in environments where it's available
   type CryptoLike = { getRandomValues?: (b: Uint8Array) => void }
   const cryptoObj = (globalThis as { crypto?: CryptoLike }).crypto
   const gv = cryptoObj?.getRandomValues?.bind(cryptoObj) as ((b: Uint8Array) => void) | undefined
   if (gv) return { byValues: true, source: gv }
 
-  // Fallback to Node's randomBytes
-  return { byValues: false, source: randomBytes }
+  // No Node randomBytes fallback in web entry
+  throw new Error('No entropy source available: provide entropyValues or ensure Web Crypto is available')
 }
-
-/**
- * Create `puid` generating function
- *
- * ### Example (es module)
- * ```js
- * import Chars, puid from 'puid-js'
- *
- * const { generator: safe32Id } = puid({ total: 100000, risk: 1e12, chars: Chars.Safe32 })
- * safe32Id()
- * // => qJhBqMJd44n4Q8n
- * ```
- *
- * ### Example (commonjs)
- * ```js
- * const { Chars, puid } = require('puid-js')
- *
- * const { generator: alphaNumId } = puid({ total: 100000, risk: 1e12, chars: Chars.AlphaNum })
- * alphaNumId()
- * // => HcR2OzLQzTNKg
- * ```
- *
- * @param config: Optional PuidConfig for configuration of ID generation
- *
- * @PuidConfig
- *   - `total`: Total number of potential (i.e. expected) IDs
- *   - `risk`: Risk of repeat in `total` IDs
- *   - `bits`: ID entropy bits
- *   - `chars`: ID characters
- *   - `entropyBytes`: EntropyByBytes function for source entropy
- *   - `entropyValues`: EntropyByValues function for source entropy
- *
- * @Notes
- *   - All config fields are optional
- *   - `total/risk` must be set together
- *   - `total/risk` and `bits` cannot both be set
- *   - `chars` must be valid (see `Chars.validChars` function)
- *   - Only one entropy source function can be set
- *   - `entropyBytes` is the form of the function `crypto.randomBytes`
- *   - `entropyValues` is the form of the function `crypto.getRandomValues`
- *   - If no entropy source set, `crypto.randomBytes` is used
- *
- * @return { generator: puid, error: Error }
- *   - `success` is a function that generates a new `puid` per call
- *   - `error` is an Error indicating the PuidConfig error
- *   - One and only one of `success` or `error` is returned
- */
 
 export default (puidConfig: PuidConfig = {}): PuidResult => {
   const DEFAULT_ENTROPY = 128
 
+  // Validate chars upfront
   if (puidConfig.chars) {
     const [isValid, errorMessage] = validChars(puidConfig.chars)
     if (!isValid) return { error: new Error(errorMessage) }
@@ -87,6 +38,12 @@ export default (puidConfig: PuidConfig = {}): PuidResult => {
 
   if (puidConfig.entropyBytes && puidConfig.entropyValues) {
     return { error: new Error('Cannot specify both entropyBytes and entropyValues functions') }
+  }
+
+  // In web build, if no entropy provided, require Web Crypto
+  if (!puidConfig.entropyBytes && !puidConfig.entropyValues) {
+    const hasWebCrypto = typeof (globalThis as { crypto?: { getRandomValues?: (b: Uint8Array) => void } }).crypto?.getRandomValues === 'function'
+    if (!hasWebCrypto) return { error: new Error('Web Crypto getRandomValues not available. Provide entropyValues.') }
   }
 
   const puidEntropyBits =

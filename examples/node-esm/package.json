@@ -1,0 +1,12 @@
+{
+  "name": "puid-esm-example",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "description": "ESM consumer example for puid-js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.mjs"
+  }
+}
+

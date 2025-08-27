@@ -28,6 +28,7 @@ randId()
   - [Overkill and Under Specify](#Overkill)
 - [Efficiencies](#Efficiencies)
 - [tl;dr](#tl;dr)
+- [Migrating from UUID v4](#UUIDv4Migration)
 
 ## <a name="Overview"></a>Overview
 
@@ -45,7 +46,7 @@ Random string generation can be thought of as a _transformation_ of some random 
 
    What characters are used in the ID?
 
-   > `puid-js` provides 16 pre-defined character sets, as well as allows custom characters, including Unicode
+  > `puid-js` provides 19 pre-defined character sets, as well as allows custom characters, including Unicode
 
 3. **ID randomness**
 
@@ -55,9 +56,66 @@ Random string generation can be thought of as a _transformation_ of some random 
 
 [TOC](#TOC)
 
+### <a name="UUIDv4Migration"></a>Migrating from UUID v4
+
+- UUID v4 has 122 bits of entropy (36 chars with hyphens; 32 hex chars without). Default `puid-js` IDs are ~132 bits in 22 URL/file-safe chars.
+
+Replace uuidv4() one-off
+
+```js
+// before
+import { v4 as uuidv4 } from 'uuid'
+const id = uuidv4()
+
+// after
+import { generate, Chars } from 'puid-js'
+// ≈132 bits, 22 chars, URL/file-safe
+const id = generate({ chars: Chars.Safe64 })
+
+// hex-like (32 chars, 128 bits)
+const hexId = generate({ bits: 128, chars: Chars.HexUpper })
+```
+
+Use a generator in hot paths
+
+```js
+import { puid, Chars } from 'puid-js'
+
+// explicit bits (≈ UUID v4 or better)
+const { generator: id128 } = puid({ bits: 128, chars: Chars.Safe64 })
+
+// or size by total/risk (10M IDs, 1e-12 repeat risk)
+const { generator: sized } = puid({ total: 1e7, risk: 1e12, chars: Chars.Safe64 })
+
+const id = id128()
+```
+
+Browser
+
+```js
+import { generate, Chars } from 'puid-js/web'
+const id = generate({ chars: Chars.Safe64 })
+```
+
+Error handling for generate()
+
+```js
+try {
+  generate({ total: 1000 }) // invalid: missing risk
+} catch (err) {
+  // handle invalid config
+}
+```
+
+Notes
+- If your DB/validators assume UUID format/length, update to accept generic ID strings. Default Safe64 is 22 chars; HexUpper at 128 bits is 32 chars.
+- Charset guidance: Safe64 (shortest URL/file-safe), Hex/HexUpper (compat), Safe32/WordSafe32 (human-friendlier).
+
+And remember, you rarely need the 122-bytes of entropy provided by UUID, and you certainly never need the inefficiency of the string representation!
+
 ### <a name="Usage"></a>Usage
 
-Creating a random ID generator using `puid-js` is a simple as:
+Creating a random ID generator using `puid-js` is as simple as:
 
 ```js
 const { puid } = require('puid-js')
@@ -65,6 +123,28 @@ const { puid } = require('puid-js')
 const { generator: randId } = puid()
 randId()
 // => 'fxgA7EO_YklcUnrPenF284'
+```
+
+Convenience: one-off generate
+
+```js
+import { generate, Chars } from 'puid-js' // or: const { generate, Chars } = require('puid-js')
+
+const id = generate() // defaults (128 bits, Safe64, secure entropy)
+const token = generate({ bits: 256, chars: Chars.HexUpper })
+
+// generate() throws on invalid config — use try/catch if you pass dynamic input
+try {
+  generate({ total: 1000 })
+} catch (err) {
+  console.error('Invalid config:', err.message)
+}
+```
+
+Stable deep import:
+
+```js
+import generate from 'puid-js/generate'
 ```
 
 **Entropy Source**
@@ -86,7 +166,7 @@ randId()
 
 **ID Characters**
 
-By default, `puid-js` use the [RFC 4648](https://tools.ietf.org/html/rfc4648#section-5) file system & URL safe characters. The `chars` option can by used to specify any of 16 [pre-defined character sets](#Chars) or custom characters, including Unicode:
+By default, `puid-js` uses the [RFC 4648](https://tools.ietf.org/html/rfc4648#section-5) file system & URL safe characters. The `chars` option can be used to specify any of 19 [pre-defined character sets](#Chars) or custom characters, including Unicode:
 
 ```js
 const { Chars, puid } = require('puid-js')
@@ -138,15 +218,37 @@ token()
 yarn add puid-js
 ```
 
+Requires Node.js >= 18.
+
 #### NPM
 
 ```bash
 npm install puid-js
 ```
 
+### Browser (ESM)
+
+Note: Many bundlers honor the "browser" export condition. Importing `puid-js` in a browser build will resolve to the web entry automatically. You can also import explicitly from `puid-js/web`.
+
+```html
+<script type="module">
+  import { puid, generate, Chars } from 'puid-js/web'
+  // Web-friendly import: defaults to Web Crypto when available and avoids bundling Node crypto
+  const { generator: id } = puid({ chars: Chars.Safe32 })
+  console.log(id())
+  // Or one-off
+  console.log(generate({ chars: Chars.Safe32 }))
+</script>
+```
+
 ### <a name="API"></a>API
 
-`puid-js` exports a higher-order function (HOF), `puid`, used to create random ID generators. The `puid` HOF takes an optional `PuidConfig` object for configuration and returns an object of the form `{ generator: () => string, error: Error }` that either passes back the `puid` generating function or an `Error` indicating a problem with the specified configuration.
+`puid-js` exports:
+
+- `puid(config?) => { generator, error }` — higher-order function (HOF) to create generators
+- `generate(config?) => string` — convenience wrapper returning a single ID (throws on invalid config)
+
+The `puid` HOF takes an optional `PuidConfig` object for configuration and returns an object of the form `{ generator: () => string, error: Error }` that either passes back the `puid` generating function or an `Error` indicating a problem with the specified configuration.
 
 #### PuidConfig
 
@@ -213,7 +315,7 @@ There are 19 pre-defined character sets:
 
 | Name           | Characters                                                                                    |
 | :------------- | :-------------------------------------------------------------------------------------------- |
-| ALpha          | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz                                          |
+| Alpha          | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz                                          |
 | AlphaLower     | abcdefghijklmnopqrstuvwxyz                                                                    |
 | AlphaUpper     | ABCDEFGHIJKLMNOPQRSTUVWXYZ                                                                    |
 | AlphaNum       | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789                                |
