@@ -57,7 +57,8 @@
     "test:unit": "yarn test:clean && yarn build:test && nyc --silent ava",
     "watch:build": "tsc -p tsconfig.json -w",
     "watch:test": "nyc --silent ava --watch",
-    "version": "standard-version"
+    "version": "standard-version",
+    "prepublishOnly": "yarn build"
   },
   "engines": {
     "node": ">=18"
