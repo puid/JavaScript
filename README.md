@@ -67,6 +67,21 @@ randId()
 // => 'fxgA7EO_YklcUnrPenF284'
 ```
 
+Convenience: one-off generate
+
+```js
+import { generate, Chars } from 'puid-js' // or: const { generate, Chars } = require('puid-js')
+
+const id = generate() // defaults (128 bits, Safe64, secure entropy)
+const token = generate({ bits: 256, chars: Chars.HexUpper })
+```
+
+Stable deep import:
+
+```js
+import generate from 'puid-js/generate'
+```
+
 **Entropy Source**
 
 `puid-js` uses `crypto.randomBytes` as the default entropy source. Options can be used to configure a specific entropy source:
@@ -150,16 +165,23 @@ npm install puid-js
 
 ```html
 <script type="module">
-  import { puid, Chars } from 'puid-js/web'
+  import { puid, generate, Chars } from 'puid-js/web'
   // Web-friendly import: defaults to Web Crypto when available and avoids bundling Node crypto
   const { generator: id } = puid({ chars: Chars.Safe32 })
   console.log(id())
+  // Or one-off
+  console.log(generate({ chars: Chars.Safe32 }))
 </script>
 ```
 
 ### <a name="API"></a>API
 
-`puid-js` exports a higher-order function (HOF), `puid`, used to create random ID generators. The `puid` HOF takes an optional `PuidConfig` object for configuration and returns an object of the form `{ generator: () => string, error: Error }` that either passes back the `puid` generating function or an `Error` indicating a problem with the specified configuration.
+`puid-js` exports:
+
+- `puid(config?) => { generator, error }` — higher-order function (HOF) to create generators
+- `generate(config?) => string` — convenience wrapper returning a single ID (throws on invalid config)
+
+The `puid` HOF takes an optional `PuidConfig` object for configuration and returns an object of the form `{ generator: () => string, error: Error }` that either passes back the `puid` generating function or an `Error` indicating a problem with the specified configuration.
 
 #### PuidConfig
 

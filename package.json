@@ -32,6 +32,11 @@
       "require": "./build/main/lib/puid.js",
       "import": "./build/module/lib/puid.js"
     },
+    "./generate": {
+      "types": "./build/main/generate.d.ts",
+      "require": "./build/main/generate.js",
+      "import": "./build/module/generate.js"
+    },
     "./package.json": "./package.json"
   },
   "repository": "https://github.com/puid/JavaScript",
