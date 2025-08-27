@@ -13,12 +13,19 @@ function walk(dir, files = []) {
   return files
 }
 
+function appendExt(spec) {
+  return spec.endsWith('.mjs') || spec.endsWith('.js') ? spec : spec + '.mjs'
+}
+
 function mjsify(file) {
   if (!file.endsWith('.js')) return
   let code = fs.readFileSync(file, 'utf-8')
-  // Replace only bare relative .js specifiers in import/export
+  // Replace relative .js with .mjs
   code = code.replace(/(from\s+['"]\.\/?[^'"\n]+)\.js(['"];?)/g, '$1.mjs$2')
   code = code.replace(/(import\(\s*['"]\.\/?[^'"\n]+)\.js(['"]\s*\))/g, '$1.mjs$2')
+  // Append .mjs to relative specifiers missing extension
+  code = code.replace(/from\s+(['"])(\.\/?[^'"\n]+)(['"])/g, (_, q1, spec, q3) => `from ${q1}${appendExt(spec)}${q3}`)
+  code = code.replace(/import\(\s*(['"])(\.\/?[^'"\n]+)(['"])\s*\)/g, (_, q1, spec, q3) => `import(${q1}${appendExt(spec)}${q3})`)
   fs.writeFileSync(file, code)
   const mjs = file.slice(0, -3) + '.mjs'
   fs.renameSync(file, mjs)

@@ -1,13 +1,7 @@
 import { Bench } from 'tinybench'
 
 // Benchmark against built outputs to avoid TS/runtime overhead
-import { createRequire } from 'node:module'
-import { fileURLToPath } from 'node:url'
-import path from 'node:path'
-const require = createRequire(import.meta.url)
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const pkg = require(path.resolve(__dirname, '../../build/main/index.js'))
-const { puid, generate, Chars } = pkg
+import { puid, generate, Chars } from '../../build/module/index.mjs'
 
 const bench = new Bench({ time: 1000 })
 
@@ -34,15 +28,23 @@ await bench.run()
 
 console.table(
   bench.tasks.map((t) => {
+    const samples = t.result?.samples ?? []
     const meanNs = t.result?.mean ?? 0
     const nsPerOp = meanNs ? Math.round(meanNs) : NaN
     const ops = meanNs ? Math.round(1e9 / meanNs) : Math.round(t.hz || 0)
+    let median = NaN
+    if (samples.length) {
+      const sorted = [...samples].sort((a, b) => a - b)
+      const mid = Math.floor(sorted.length / 2)
+      median = sorted.length % 2 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2)
+    }
     return {
       name: t.name,
-      'ns/op': nsPerOp,
+      'ns/op (mean)': nsPerOp,
+      'ns/op (median)': median,
       'ops/s': ops,
       '±%': (t.result?.rme ?? 0).toFixed(2),
-      samples: t.result?.samples.length ?? 0
+      samples: samples.length
     }
   })
 )
