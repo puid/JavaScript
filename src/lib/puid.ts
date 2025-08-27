@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto'
+import { randomBytes } from 'node:crypto'
 
 import { EntropyByBytes, EntropyByValues, EntropyFunction, Puid, PuidConfig, PuidResult } from '../types/puid'
 
@@ -16,6 +16,13 @@ const selectEntropyFunction = (puidConfig: PuidConfig): EntropyFunction => {
   } else if (puidConfig.entropyBytes) {
     return [false, puidConfig.entropyBytes as EntropyByBytes]
   } else {
+    // Prefer Web Crypto in environments where it's available
+    const g: any = globalThis as any
+    const gv = g?.crypto?.getRandomValues as ((buf: Uint8Array) => Uint8Array) | undefined
+    if (typeof gv === 'function') {
+      return [true, (buffer: Uint8Array) => { gv.call(g.crypto, buffer) }]
+    }
+    // Fallback to Node's randomBytes
     return [false, randomBytes]
   }
 }
