@@ -26,7 +26,7 @@ type BitShifts = readonly BitShift[]
 //
 // Only two bits are necessary to determine 100100 < 110010
 //
-const bitShifts = (chars: string): BitShifts => {
+const computeBitShifts = (chars: string): BitShifts => {
   const nBitsPerChar = bitsPerChar(chars)
   const baseValue = chars.length % 2 == 0 ? chars.length - 1 : chars.length
   const baseBitShift: BitShift = [baseValue, ceil(nBitsPerChar)]
@@ -50,6 +50,15 @@ const bitShifts = (chars: string): BitShifts => {
       },
       [baseBitShift]
     )
+}
+
+const bitShiftsCache = new Map<string, BitShifts>()
+const bitShifts = (chars: string): BitShifts => {
+  const cached = bitShiftsCache.get(chars)
+  if (cached) return cached
+  const shifts = computeBitShifts(chars)
+  bitShiftsCache.set(chars, shifts)
+  return shifts
 }
 
 const entropyByBytes = (skipBytes: number, entropyBuffer: ArrayBuffer, sourceBytes: EntropyByBytes) => {
