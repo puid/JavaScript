@@ -26,11 +26,10 @@
     "token"
   ],
   "scripts": {
-    "build": "run-p build:*",
-    "build:declarations": "tsc src/index.ts --outFile build/main/index.d.ts --declaration --emitDeclarationOnly",
+    "build": "yarn run build:main && yarn run build:module",
     "build:main": "rm -rf ./build/main && tsc",
     "build:module": "tsc -p tsconfig.module.json",
-    "build:pack": "yarn build:main && rm -f build/main/lib/**/*.d.ts && npm pack",
+    "build:pack": "yarn build && npm pack",
     "build:test": "rm -rf ./build/test && tsc -p tsconfig.test.json",
     "check-cli": "run-s test diff-integration-tests check-integration-tests",
     "check-integration-tests": "run-s check-integration-test:*",
