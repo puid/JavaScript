@@ -74,6 +74,13 @@ import { generate, Chars } from 'puid-js' // or: const { generate, Chars } = req
 
 const id = generate() // defaults (128 bits, Safe64, secure entropy)
 const token = generate({ bits: 256, chars: Chars.HexUpper })
+
+// generate() throws on invalid config — use try/catch if you pass dynamic input
+try {
+  generate({ total: 1000 })
+} catch (err) {
+  console.error('Invalid config:', err.message)
+}
 ```
 
 Stable deep import:
@@ -162,6 +169,8 @@ npm install puid-js
 ```
 
 ### Browser (ESM)
+
+Note: Many bundlers honor the "browser" export condition. Importing `puid-js` in a browser build will resolve to the web entry automatically. You can also import explicitly from `puid-js/web`.
 
 ```html
 <script type="module">

@@ -33,11 +33,17 @@ bench
 await bench.run()
 
 console.table(
-  bench.tasks.map((t) => ({
-    name: t.name,
-    hz: Math.round(t.hz),
-    '±%': (t.result?.rme ?? 0).toFixed(2),
-    samples: t.result?.samples.length ?? 0
-  }))
+  bench.tasks.map((t) => {
+    const meanNs = t.result?.mean ?? 0
+    const nsPerOp = meanNs ? Math.round(meanNs) : NaN
+    const ops = meanNs ? Math.round(1e9 / meanNs) : Math.round(t.hz || 0)
+    return {
+      name: t.name,
+      'ns/op': nsPerOp,
+      'ops/s': ops,
+      '±%': (t.result?.rme ?? 0).toFixed(2),
+      samples: t.result?.samples.length ?? 0
+    }
+  })
 )
 

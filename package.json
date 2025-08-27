@@ -8,34 +8,39 @@
   "sideEffects": false,
   "exports": {
     ".": {
+      "browser": {
+        "types": "./build/main/web.d.ts",
+        "require": "./build/main/web.js",
+        "import": "./build/module/web.mjs"
+      },
       "types": "./build/main/index.d.ts",
       "require": "./build/main/index.js",
-      "import": "./build/module/index.js"
+      "import": "./build/module/index.mjs"
     },
     "./web": {
       "types": "./build/main/web.d.ts",
       "require": "./build/main/web.js",
-      "import": "./build/module/web.js"
+      "import": "./build/module/web.mjs"
     },
     "./chars": {
       "types": "./build/main/lib/chars.d.ts",
       "require": "./build/main/lib/chars.js",
-      "import": "./build/module/lib/chars.js"
+      "import": "./build/module/lib/chars.mjs"
     },
     "./entropy": {
       "types": "./build/main/lib/entropy.d.ts",
       "require": "./build/main/lib/entropy.js",
-      "import": "./build/module/lib/entropy.js"
+      "import": "./build/module/lib/entropy.mjs"
     },
     "./puid": {
       "types": "./build/main/lib/puid.d.ts",
       "require": "./build/main/lib/puid.js",
-      "import": "./build/module/lib/puid.js"
+      "import": "./build/module/lib/puid.mjs"
     },
     "./generate": {
       "types": "./build/main/generate.d.ts",
       "require": "./build/main/generate.js",
-      "import": "./build/module/generate.js"
+      "import": "./build/module/generate.mjs"
     },
     "./package.json": "./package.json"
   },
@@ -61,7 +66,7 @@
   "scripts": {
     "build": "yarn run build:main && yarn run build:module",
     "build:main": "rm -rf ./build/main && tsc",
-    "build:module": "tsc -p tsconfig.module.json",
+    "build:module": "tsc -p tsconfig.module.json && node scripts/build/mjsify.cjs",
     "build:pack": "yarn build && npm pack",
     "build:test": "rm -rf ./build/test && tsc -p tsconfig.test.json",
     "check-cli": "run-s test diff-integration-tests check-integration-tests",

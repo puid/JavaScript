@@ -12,3 +12,6 @@ puid-js-*.tgz
 !.yarn/releases
 !.yarn/releases/**
 timing
+scripts/build/*.js
+scripts/build/*.mjs
+!scripts/build/mjsify.cjs
