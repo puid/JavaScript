@@ -4,5 +4,8 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "files.exclude": {
     "**/.nyc_output": true
-  }
+  },
+  "cSpell.words": [
+    "Puid"
+  ]
 }
