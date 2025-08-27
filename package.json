@@ -90,6 +90,7 @@
     "failFast": true,
     "timeout": "60s",
     "typescript": {
+      "compile": "tsc",
       "rewritePaths": {
         "src/": "build/test/"
       }
