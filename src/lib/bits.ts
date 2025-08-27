@@ -156,9 +156,12 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
   if (isPow2(nChars)) {
     return () => {
       entropyOffset = fillEntropy(entropyOffset, entropyBuffer, entropyFunction)
-      const codes = mapper.map((ndx: number) =>
-        charsEncoder(valueAt(entropyOffset + ndx * nBitsPerChar, nBitsPerChar, entropyBytes))
-      )
+      const codes = new Array<number>(puidLen)
+      for (let i = 0; i < puidLen; i++) {
+        codes[i] = charsEncoder(
+          valueAt(entropyOffset + i * nBitsPerChar, nBitsPerChar, entropyBytes)
+        )
+      }
       entropyOffset += nBitsPerPuid
       return String.fromCharCode(...codes)
     }
