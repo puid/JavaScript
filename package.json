@@ -12,6 +12,11 @@
       "require": "./build/main/index.js",
       "import": "./build/module/index.js"
     },
+    "./web": {
+      "types": "./build/main/web.d.ts",
+      "require": "./build/main/web.js",
+      "import": "./build/module/web.js"
+    },
     "./package.json": "./package.json"
   },
   "repository": "https://github.com/puid/JavaScript",

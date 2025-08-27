@@ -150,9 +150,9 @@ npm install puid-js
 
 ```html
 <script type="module">
-  import { puid, Chars } from 'puid-js'
-  // Use Web Crypto as the entropy source in browsers
-  const { generator: id } = puid({ entropyValues: window.crypto.getRandomValues, chars: Chars.Safe32 })
+  import { puid, Chars } from 'puid-js/web'
+  // Web-friendly import: defaults to Web Crypto when available and avoids bundling Node crypto
+  const { generator: id } = puid({ chars: Chars.Safe32 })
   console.log(id())
 </script>
 ```
