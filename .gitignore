@@ -8,5 +8,7 @@ coverage
 package-lock.json
 puid-js-*.tgz
 *~
-.yarn
+.yarn/*
+!.yarn/releases
+!.yarn/releases/**
 timing

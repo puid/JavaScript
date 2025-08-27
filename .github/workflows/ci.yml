@@ -7,10 +7,13 @@ on:
 
 jobs:
   build-test:
-    runs-on: ubuntu-latest
+    name: build+test (${{ matrix.os }} / node@${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        node: [18, 20, 22]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: [20]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,6 +22,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
+          cache: 'yarn'
 
       - name: Enable Corepack (Yarn)
         run: corepack enable
@@ -27,8 +31,8 @@ jobs:
         run: yarn install --immutable
 
       - name: Build
-        run: yarn run build:main && yarn run build:module
+        run: yarn build
 
       - name: Test
-        run: rm -rf build/test && yarn run build:test && yarn run test:unit
+        run: yarn test:unit
 
