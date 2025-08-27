@@ -112,14 +112,14 @@ const fillEntropy = (entropyOffset: number, entropyBuffer: ArrayBuffer, entropyF
 
 const valueAt = (offset: number, nBits: number, bytes: Uint8Array): number => {
   const lByteNdx = floor(offset / 8)
-  const lByte = bytes[lByteNdx]
+  const lByte = bytes[lByteNdx]!
   const lBitNum = offset % 8
 
   if (lBitNum + nBits <= 8) {
     return ((lByte << lBitNum) & 0xff) >> (8 - nBits)
   }
 
-  const rByte = bytes[lByteNdx + 1]
+  const rByte = bytes[lByteNdx + 1]!
   const rBitNum = lBitNum + nBits - 8
 
   const lValue = ((lByte << lBitNum) & 0xff) >> (lBitNum - rBitNum)
