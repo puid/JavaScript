@@ -17,9 +17,32 @@
       "require": "./build/main/web.js",
       "import": "./build/module/web.js"
     },
+    "./chars": {
+      "types": "./build/main/lib/chars.d.ts",
+      "require": "./build/main/lib/chars.js",
+      "import": "./build/module/lib/chars.js"
+    },
+    "./entropy": {
+      "types": "./build/main/lib/entropy.d.ts",
+      "require": "./build/main/lib/entropy.js",
+      "import": "./build/module/lib/entropy.js"
+    },
+    "./puid": {
+      "types": "./build/main/lib/puid.d.ts",
+      "require": "./build/main/lib/puid.js",
+      "import": "./build/module/lib/puid.js"
+    },
     "./package.json": "./package.json"
   },
   "repository": "https://github.com/puid/JavaScript",
+  "bugs": {
+    "url": "https://github.com/puid/JavaScript/issues"
+  },
+  "homepage": "https://github.com/puid/JavaScript#readme",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "license": "MIT",
   "keywords": [
     "random",
@@ -61,6 +84,7 @@
     "test:unit": "yarn test:clean && yarn build:test && nyc --silent ava",
     "watch:build": "tsc -p tsconfig.json -w",
     "watch:test": "nyc --silent ava --watch",
+    "pack:verify": "npm pack --json | node -e \"let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s)[0];console.log(j.filename);for(const f of j.files) console.log(f.path)})\"",
     "version": "standard-version",
     "prepublishOnly": "yarn build"
   },
