@@ -54,27 +54,27 @@
     "node": ">=10"
   },
   "devDependencies": {
-    "@ava/typescript": "^1.1.1",
-    "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "@typescript-eslint/eslint-plugin": "^4.0.1",
-    "@typescript-eslint/parser": "^4.0.1",
-    "ava": "^3.12.1",
-    "codecov": "^3.5.0",
+    "@ava/typescript": "^6.0.0",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "ava": "^6.4.1",
+    "codecov": "^3.8.3",
     "cz-conventional-changelog": "^3.3.0",
-    "eslint": "^7.8.0",
-    "eslint-config-prettier": "^6.11.0",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-eslint-comments": "^3.2.0",
-    "eslint-plugin-functional": "^3.0.2",
-    "eslint-plugin-import": "^2.22.0",
-    "gh-pages": "^3.1.0",
+    "eslint-plugin-functional": "^9.0.2",
+    "eslint-plugin-import": "^2.32.0",
+    "gh-pages": "^6.3.0",
     "npm-run-all": "^4.1.5",
-    "nyc": "^15.1.0",
-    "open-cli": "^6.0.1",
-    "prettier": "^2.1.1",
-    "standard-version": "^9.0.0",
-    "ts-node": "^9.0.0",
-    "typedoc": "^0.19.0",
-    "typescript": "^4.5.0"
+    "nyc": "^17.1.0",
+    "open-cli": "^8.0.0",
+    "prettier": "^3.6.2",
+    "standard-version": "^9.5.0",
+    "ts-node": "^10.9.2",
+    "typedoc": "^0.28.11",
+    "typescript": "^5.9.2"
   },
   "files": [
     "build/main",
@@ -115,5 +115,6 @@
       "src/lib/prngBytes.ts",
       "src/lib/util.ts"
     ]
-  }
+  },
+  "packageManager": "yarn@4.5.1+sha512.341db9396b6e289fecc30cd7ab3af65060e05ebff4b3b47547b278b9e67b08f485ecd8c79006b405446262142c7a38154445ef7f17c1d5d1de7d90bf9ce7054d"
 }
