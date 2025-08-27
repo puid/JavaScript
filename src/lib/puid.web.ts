@@ -1,4 +1,4 @@
-import { EntropyByBytes, EntropyByValues, EntropyFunction, Puid, PuidConfig, PuidResult } from '../types/puid'
+import { EntropyFunction, Puid, PuidConfig, PuidResult } from '../types/puid'
 
 import muncher from './bits'
 import { Chars, charsName, validChars } from './chars'
@@ -10,13 +10,13 @@ const round2 = (f: number): number => round(f * 100) / 100
 const { ceil, round } = Math
 
 const selectEntropyFunction = (puidConfig: PuidConfig): EntropyFunction => {
-  if (puidConfig.entropyValues) return [true, puidConfig.entropyValues as EntropyByValues]
-  if (puidConfig.entropyBytes) return [false, puidConfig.entropyBytes as EntropyByBytes]
+  if (puidConfig.entropyValues) return { byValues: true, source: puidConfig.entropyValues }
+  if (puidConfig.entropyBytes) return { byValues: false, source: puidConfig.entropyBytes }
 
   type CryptoLike = { getRandomValues?: (b: Uint8Array) => void }
   const cryptoObj = (globalThis as { crypto?: CryptoLike }).crypto
   const gv = cryptoObj?.getRandomValues?.bind(cryptoObj) as ((b: Uint8Array) => void) | undefined
-  if (gv) return [true, gv]
+  if (gv) return { byValues: true, source: gv }
 
   // No Node randomBytes fallback in web entry
   throw new Error('No entropy source available: provide entropyValues or ensure Web Crypto is available')

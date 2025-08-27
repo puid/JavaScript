@@ -88,14 +88,14 @@ const fillEntropy = (entropyOffset: number, entropyBuffer: ArrayBuffer, entropyF
   const nEntropyBytes = entropyBytes.length
   const nEntropyBits = 8 * nEntropyBytes
 
-  const [byValues, entropySource] = entropyFunction
+  const { byValues, source } = entropyFunction
 
   if (entropyOffset === nEntropyBits) {
     // No carry
     if (byValues) {
-      entropyByValues(0, entropyBuffer, entropySource as EntropyByValues)
+      entropyByValues(0, entropyBuffer, source)
     } else {
-      entropyByBytes(0, entropyBuffer, entropySource as EntropyByBytes)
+      entropyByBytes(0, entropyBuffer, source)
     }
   } else {
     // Handle carry
@@ -110,9 +110,9 @@ const fillEntropy = (entropyOffset: number, entropyBuffer: ArrayBuffer, entropyF
 
     // Fill right bytes with new random values
     if (byValues) {
-      entropyByValues(nUnusedBytes, entropyBuffer, entropySource as EntropyByValues)
+      entropyByValues(nUnusedBytes, entropyBuffer, source)
     } else {
-      entropyByBytes(nUnusedBytes, entropyBuffer, entropySource as EntropyByBytes)
+      entropyByBytes(nUnusedBytes, entropyBuffer, source)
     }
   }
 

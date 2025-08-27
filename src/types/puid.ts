@@ -25,7 +25,9 @@ export type PuidBitsSlicer = (puidBits: PuidBits) => number[]
 export type PuidEncoder = (n: number) => number
 
 export type EntropySource = EntropyByBytes | EntropyByValues
-export type EntropyFunction = [byValues: boolean, source: EntropySource]
+export type EntropyFunction =
+  | { byValues: true; source: EntropyByValues }
+  | { byValues: false; source: EntropyByBytes }
 
 export type PuidInfo = {
   readonly bits: number
