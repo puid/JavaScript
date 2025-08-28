@@ -9,6 +9,8 @@ jobs:
   build-test:
     name: build+test (${{ matrix.os }} / node@${{ matrix.node }})
     runs-on: ${{ matrix.os }}
+    env:
+      PUID_SKIP_DATA_TESTS: '1'
     strategy:
       fail-fast: false
       matrix:
@@ -34,7 +36,7 @@ jobs:
         run: yarn build
 
       - name: Node ESM import smoke
-        run: node --input-type=module -e "import { generate, puid } from './build/module/index.mjs'; console.log(typeof generate==='function' && typeof puid==='function' ? 'ok' : 'bad')"
+        run: node scripts/ci/esm-smoke.mjs
 
       - name: Test
         run: yarn test:unit

@@ -3,6 +3,9 @@ import test, { ExecutionContext } from 'ava'
 import { default as puid } from './lib/puid'
 import { dataIds, dataParams, fileBytes } from './lib/util'
 
+// Allow skipping data-driven cross-repo tests in CI or when PUID_SKIP_DATA_TESTS is set
+const it = process.env.PUID_SKIP_DATA_TESTS ? test.skip : test
+
 const testData = (t: ExecutionContext, dataName: string) => {
   const params = dataParams(dataName)
   const ids = dataIds(dataName)
@@ -17,14 +20,14 @@ const testData = (t: ExecutionContext, dataName: string) => {
   if (randId) ids.forEach((id) => id !== '' && t.is(id, randId()))
 }
 
-test('alphanum data', (t) => testData(t, 'alphanum'))
+it('alphanum data', (t) => testData(t, 'alphanum'))
 
-test('alpha_10_lower data', (t) => testData(t, 'alpha_10_lower'))
+it('alpha_10_lower data', (t) => testData(t, 'alpha_10_lower'))
 
-test('dingosky data', (t) => testData(t, 'dingosky'))
+it('dingosky data', (t) => testData(t, 'dingosky'))
 
-test('safe32 data', (t) => testData(t, 'safe32'))
+it('safe32 data', (t) => testData(t, 'safe32'))
 
-test('safe_ascii data', (t) => testData(t, 'safe_ascii'))
+it('safe_ascii data', (t) => testData(t, 'safe_ascii'))
 
-test('unicode data', (t) => testData(t, 'unicode'))
+it('unicode data', (t) => testData(t, 'unicode'))

@@ -88,7 +88,7 @@
     "prepare-release": "run-s reset-hard test cov:check doc:html version doc:publish",
     "reset-hard": "git clean -dfx && git reset --hard && yarn",
     "test": "run-s build test:*",
-    "test:clean": "rm -rf ./build/*test*",
+    "test:clean": "node -e \"const fs=require('fs');['build/test','build/tsconfig.test.tsbuildinfo'].forEach(p=>{try{fs.rmSync(p,{recursive:true,force:true})}catch{}})\"",
     "test:data": "yarn test:clean && yarn build:test && yarn ava src/data.spec.ts",
     "test:prettier": "prettier \"src/**/*.ts\" --list-different",
     "test:unit": "yarn test:clean && yarn build:test && nyc --silent ava",
