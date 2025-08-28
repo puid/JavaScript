@@ -1,7 +1,8 @@
 import test from 'ava'
 
-import { generate, Chars } from './index'
 import puid from './lib/puid'
+
+import { Chars, generate } from './index'
 
 // Convenience wrapper should produce a string and match the HOF-derived length
 test('generate() default matches HOF length', (t) => {

@@ -5,7 +5,7 @@ import { EntropyFunction, Puid, PuidConfig, PuidResult } from '../types/puid'
 import muncher from './bits'
 import { byteLength } from './byteLength'
 import { Chars, charsName, validChars } from './chars'
-import { entropyBits, entropyBitsPerChar } from './entropy'
+import { entropyBits, entropyBitsPerChar, entropyRisk, entropyTotal } from './entropy'
 
 const round2 = (f: number): number => round(f * 100) / 100
 
@@ -100,6 +100,10 @@ export default (puidConfig: PuidConfig = {}): PuidResult => {
   const bitsMuncher = muncher(puidLen, puidChars, selectEntropyFunction(puidConfig))
 
   const puid: Puid = (): string => bitsMuncher()
+
+  const effectiveBits = puidBitsPerChar * puidLen
+  puid.risk = (total: number): number => entropyRisk(effectiveBits, total)
+  puid.total = (risk: number): number => entropyTotal(effectiveBits, risk)
 
   puid.info = Object.freeze({
     bits: round2(puidBitsPerChar * puidLen),

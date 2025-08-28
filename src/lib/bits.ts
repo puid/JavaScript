@@ -143,7 +143,7 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
   const nBytesPerPuid = ceil(nBitsPerPuid / 8)
 
   const bufferLen = nBytesPerPuid + 1
-   
+
   let entropyOffset = 8 * bufferLen
   const entropyBuffer = new ArrayBuffer(bufferLen)
   const entropyBytes = new Uint8Array(entropyBuffer)
@@ -158,9 +158,7 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
       entropyOffset = fillEntropy(entropyOffset, entropyBuffer, entropyFunction)
       const codes = new Array<number>(puidLen)
       for (let i = 0; i < puidLen; i++) {
-        codes[i] = charsEncoder(
-          valueAt(entropyOffset + i * nBitsPerChar, nBitsPerChar, entropyBytes)
-        )
+        codes[i] = charsEncoder(valueAt(entropyOffset + i * nBitsPerChar, nBitsPerChar, entropyBytes))
       }
       entropyOffset += nBitsPerPuid
       return String.fromCharCode(...codes)

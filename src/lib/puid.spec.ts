@@ -3,6 +3,7 @@ import test, { ExecutionContext } from 'ava'
 import { Puid, PuidConfig } from '../types/puid'
 
 import { Chars } from './chars'
+import { entropyBitsPerChar, entropyRisk, entropyTotal } from './entropy'
 import prngBytes from './prngBytes'
 import puid from './puid'
 import { fixedBytes } from './util'
@@ -46,7 +47,7 @@ const puidGenerator = (config?: PuidConfig): Puid => {
   if (generator) return generator
 
   const cxError = () => 'CxError'
-   
+
   cxError.info = {
     bits: -1,
     bitsPerChar: -1,
@@ -55,6 +56,8 @@ const puidGenerator = (config?: PuidConfig): Puid => {
     ere: -1,
     length: -1
   }
+  cxError.risk = () => -1
+  cxError.total = () => -1
   return cxError
 }
 
@@ -73,20 +76,29 @@ test('puid default', (t) => {
   t.is(ere, 0.75)
   t.is(length, 22)
   t.is(randId().length, length)
+
+  t.is(Math.round(randId.risk(1e15)), 10889035741)
+  t.is(Math.round(randId.total(1e15)), 3299853896989)
 })
 
 test('puid total/risk', (t) => {
-  const alphaId = puidGenerator({ total: 10000, risk: 1e12, chars: Chars.Alpha })
+  const total = 10000
+  const risk = 1e12
+  const alphaId = puidGenerator({ total, risk, chars: Chars.Alpha })
 
   const info = alphaId.info
   t.truthy(info)
 
-  const { bits, bitsPerChar, charsName, ere, length } = info
+  const { bits, bitsPerChar, chars, charsName, ere, length } = info
   t.is(bits, 68.41)
   t.is(bitsPerChar, 5.7)
   t.is(charsName, 'alpha')
   t.is(ere, 0.71)
   t.is(length, 12)
+
+  const idBits = entropyBitsPerChar(chars) * length
+  t.is(alphaId.total(risk), entropyTotal(idBits, risk))
+  t.is(alphaId.risk(total), entropyRisk(idBits, total))
 })
 
 const charsOption = (chars: string, bits: number, t: ExecutionContext) => {

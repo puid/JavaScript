@@ -54,65 +54,6 @@ Random string generation can be thought of as a _transformation_ of some random 
 
    > `puid-js` allows an intuitive, explicit specification of ID randomness
 
-[TOC](#TOC)
-
-### <a name="UUIDv4Migration"></a>Migrating from UUID v4
-
-- UUID v4 has 122 bits of entropy (36 chars with hyphens; 32 hex chars without). Default `puid-js` IDs are ~132 bits in 22 URL/file-safe chars.
-
-Replace uuidv4() one-off
-
-```js
-// before
-import { v4 as uuidv4 } from 'uuid'
-const id = uuidv4()
-
-// after
-import { generate, Chars } from 'puid-js'
-// ≈132 bits, 22 chars, URL/file-safe
-const id = generate({ chars: Chars.Safe64 })
-
-// hex-like (32 chars, 128 bits)
-const hexId = generate({ bits: 128, chars: Chars.HexUpper })
-```
-
-Use a generator in hot paths
-
-```js
-import { puid, Chars } from 'puid-js'
-
-// explicit bits (≈ UUID v4 or better)
-const { generator: id128 } = puid({ bits: 128, chars: Chars.Safe64 })
-
-// or size by total/risk (10M IDs, 1e-12 repeat risk)
-const { generator: sized } = puid({ total: 1e7, risk: 1e12, chars: Chars.Safe64 })
-
-const id = id128()
-```
-
-Browser
-
-```js
-import { generate, Chars } from 'puid-js/web'
-const id = generate({ chars: Chars.Safe64 })
-```
-
-Error handling for generate()
-
-```js
-try {
-  generate({ total: 1000 }) // invalid: missing risk
-} catch (err) {
-  // handle invalid config
-}
-```
-
-Notes
-- If your DB/validators assume UUID format/length, update to accept generic ID strings. Default Safe64 is 22 chars; HexUpper at 128 bits is 32 chars.
-- Charset guidance: Safe64 (shortest URL/file-safe), Hex/HexUpper (compat), Safe32/WordSafe32 (human-friendlier).
-
-And remember, you rarely need the 122-bytes of entropy provided by UUID, and you certainly never need the inefficiency of the string representation!
-
 ### <a name="Usage"></a>Usage
 
 Creating a random ID generator using `puid-js` is as simple as:
@@ -277,16 +218,19 @@ The optional `PuidConfig` object has the following fields:
 - `chars`: `Chars.Safe64`
 - `entropyBytes`: `crypto.randomBytes`
 
-#### PuidInfo
+#### `generator` API
+The `puid` generator function includes:
+- `info` field that displays generator configuration
+- `risk/1` function that approximates the `risk` of a repeat given a `total` number of IDs
+- `total/1` function that approximates the `total` possible IDs for a given `risk`
 
-The `puid` generator function includes an `info` field that displays generator configuration:
-
-- `bits`: ID entropy
-- `bitsPerChar`: Entropy bits per ID character
-- `chars`: Source characters
-- `charsName`: Name of pre-defined `Chars` or `custom`
-- `ere`: Entropy representation efficiency
-- `length`: ID string length
+- `info`
+    - `bits`: ID entropy
+    - `bitsPerChar`: Entropy bits per ID character
+    - `chars`: Source characters 
+    - `charsName`: Name of pre-defined `Chars` or `custom`
+    - `ere`: Entropy representation efficiency
+    - `length`: ID string length
 
 Example:
 
@@ -308,6 +252,42 @@ Example:
       length: 16
     }
 ```
+
+- `risk`
+For the `generator`, an approximate `risk` given a number of `total` possible IDs.
+This is useful when specifying puid `bits` to inspect the `risk` for some `total`.
+
+Example: (output is rounded). And remember, read this as '1 in `risk` chance of repeat'
+```js
+  const { Chars, puid } = require('puid-js')
+  const { generator: genId } = puid({ bits: 96, chars: Chars.Safe32 })
+
+  genId.risk(1e6)
+  // => 2535303735760194600
+  genId.risk(1e9)
+  // => 2535301202992
+  genId.risk(1e12)
+  // => 2535301
+```
+
+- `total`
+For the `generator`, an approximate number of `total` possible IDs for a given `risk`
+This is useful when specifying puid `bits` to inspect the possible `total` given some `risk`.
+
+Example: (output is rounded).
+```js
+  const { Chars, puid } = require('puid-js')
+  const { generator: genId } = puid({ bits: 96, chars: Chars.Safe32 })
+
+  genId.total(1e9)
+  // => 50351774552
+  genId.total(1e12)
+  // => 1592262910
+  genId.total(1e15)
+  // => 50351775
+```
+
+
 
 ### <a name="Chars"></a>Chars
 
@@ -564,3 +544,60 @@ Hmmm. Looks like there are 500,000 IDs expected and the repeat risk is 1 in a tr
 ```
 
 [TOC](#TOC)
+
+### <a name="UUIDv4Migration"></a>Migrating from UUID v4
+
+- UUID v4 has 122 bits of entropy (36 chars with hyphens; 32 hex chars without). Default `puid-js` IDs are ~132 bits in 22 URL/file-safe chars.
+
+Replace uuidv4() one-off
+
+```js
+// before
+import { v4 as uuidv4 } from 'uuid'
+const id = uuidv4()
+
+// after
+import { generate, Chars } from 'puid-js'
+// ≈132 bits, 22 chars, URL/file-safe
+const id = generate({ chars: Chars.Safe64 })
+
+// hex-like (32 chars, 128 bits)
+const hexId = generate({ bits: 128, chars: Chars.HexUpper })
+```
+
+Use a generator in hot paths
+
+```js
+import { puid, Chars } from 'puid-js'
+
+// explicit bits (≈ UUID v4 or better)
+const { generator: id128 } = puid({ bits: 128, chars: Chars.Safe64 })
+
+// or size by total/risk (10M IDs, 1e-12 repeat risk)
+const { generator: sized } = puid({ total: 1e7, risk: 1e12, chars: Chars.Safe64 })
+
+const id = id128()
+```
+
+Browser
+
+```js
+import { generate, Chars } from 'puid-js/web'
+const id = generate({ chars: Chars.Safe64 })
+```
+
+Error handling for generate()
+
+```js
+try {
+  generate({ total: 1000 }) // invalid: missing risk
+} catch (err) {
+  // handle invalid config
+}
+```
+
+Notes
+- If your DB/validators assume UUID format/length, update to accept generic ID strings. Default Safe64 is 22 chars; HexUpper at 128 bits is 32 chars.
+- Charset guidance: Safe64 (shortest URL/file-safe), Hex/HexUpper (compat), Safe32/WordSafe32 (human-friendlier).
+
+And remember, you rarely need the 122-bytes of entropy provided by UUID, and you certainly never need the inefficiency of the string representation!

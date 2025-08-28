@@ -1,7 +1,5 @@
- 
-
 export type EntropyByBytes = (nBytes: number) => Uint8Array
- 
+
 export type EntropyByValues = (buffer: Uint8Array) => void
 export type PuidConfig = {
   readonly chars?: string
@@ -25,9 +23,7 @@ export type PuidBitsSlicer = (puidBits: PuidBits) => number[]
 export type PuidEncoder = (n: number) => number
 
 export type EntropySource = EntropyByBytes | EntropyByValues
-export type EntropyFunction =
-  | { byValues: true; source: EntropyByValues }
-  | { byValues: false; source: EntropyByBytes }
+export type EntropyFunction = { byValues: true; source: EntropyByValues } | { byValues: false; source: EntropyByBytes }
 
 export type PuidInfo = {
   readonly bits: number
@@ -38,10 +34,11 @@ export type PuidInfo = {
   readonly length: number
 }
 
- 
 export type Puid = {
   (): string
   info: PuidInfo
+  risk: (total: number) => number
+  total: (risk: number) => number
 }
 
 export type PuidError = {

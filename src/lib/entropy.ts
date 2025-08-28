@@ -1,4 +1,4 @@
-const { ceil, log2, trunc } = Math
+const { ceil, log2, sqrt, trunc } = Math
 
 /**
  * Shannon entropy bits necessary for `total` number of IDs with `risk` of repeat
@@ -28,9 +28,77 @@ const entropyBits = (total: number, risk: number): number => {
   if (total == 0 || total == 1) return 0
   if (risk == 0 || risk == 1) return 0
 
-  const n = total < 1000 ? log2(total) + log2(total - 1) : 2 * log2(total)
+  const n = log2(total) + log2(total - 1)
 
   return n + log2(risk) - 1
+}
+
+/**
+ * Risk given entropy `bits` after `total` IDs
+ *
+ * This approximation is conservative and will underestimate the true risk.
+ *
+ * @param bits - entropy bits
+ *        total - total IDs
+ *
+ * @returns risk of repeat
+ *
+ * ### Example (es module)
+ * ```js
+ * import { entropyRisk } from 'puid-js'
+ *
+ * entropyRisk(96, 1.0e7)
+ * // => 1584563250285288
+ * ```
+ *
+ * ### Example (commonjs)
+ * ```js
+ * const { entropyRisk } = require('puid-js')
+ *
+ * entropyRisk(96, 1.0e7)
+ * // => 1584563250285288
+ * ```
+ */
+const entropyRisk = (bits: number, total: number): number => {
+  if (total == 0 || total == 1) return 0
+  if (bits <= 0) return 0
+
+  const n = log2(total) + log2(total - 1)
+  return 2 ** (bits - n + 1)
+}
+
+/**
+ * Total possible IDs given entropy `bits` and repeat `risk`
+ *
+ * This exact inversion with flooring is conservative and will underestimate the true total.
+ *
+ * @param bits - entropy bits
+ *        risk - risk of repeat
+ *
+ * @returns total possible IDs
+ *
+ * ### Example (es module)
+ * ```js
+ * import { entropyTotal } from 'puid-js'
+ *
+ * entropyTotal(64, 1e9)
+ * // => 192077
+ * ```
+ *
+ * ### Example (commonjs)
+ * ```js
+ * const { entropyTotal } = require('puid-js')
+ *
+ * entropyTotal(64, 1e9)
+ * // => 192077
+ * ```
+ */
+const entropyTotal = (bits: number, risk: number): number => {
+  if (bits <= 0) return 0
+  if (risk == 0 || risk == 1) return 0
+
+  const c = 2 ** (bits + 1) / risk
+  return (1 + sqrt(1 + 4 * c)) / 2
 }
 
 /**
@@ -85,7 +153,7 @@ const entropyBitsPerChar = (chars: string): number => log2(chars.length)
 const bitsForLen = (chars: string, len: number): number => trunc(len * entropyBitsPerChar(chars))
 
 /**
- * Len necessary to have an ID of bits `bits` using characters `chars`
+ * Length necessary to have an ID of `bits` entropy using characters `chars`
  *
  * ### Example (es module)
  * ```js
@@ -110,4 +178,4 @@ const bitsForLen = (chars: string, len: number): number => trunc(len * entropyBi
  */
 const lenForBits = (chars: string, bits: number): number => ceil(bits / entropyBitsPerChar(chars))
 
-export { bitsForLen, entropyBitsPerChar, entropyBits, lenForBits }
+export { bitsForLen, entropyBitsPerChar, entropyBits, entropyTotal, entropyRisk, lenForBits }
