@@ -1,5 +1,22 @@
 # Changelog
 
+## v2.1.0 (2025-08-29)
+
+### Features
+
+- Add `encode(bytes)` and `decode(puid)` methods on the Puid generator to encode/decode using the generator's configured characters.
+
+- Add `risk(total)` and `total(risk)` methods on the Puid generator to approximate the risk/total for the generator using conservative approximations of actual entropy capacity.
+
+### Types/Tests
+
+- Extend Puid type with encode and decode methods
+- Extend Puid type with risk and total methods
+
+### Changes
+
+The calculations using `bits`, `risk` and `total` drop the minor efficiency for small totals. When using `total < 1000` this may create a slightly different corresponding value for a calculation given any two of the three values, but does not effect core `puid` generation.
+
 ## v2.0.0 (2025-08-27)
 
 ### Breaking
