@@ -1,6 +1,6 @@
 {
   "name": "puid-js",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Simple, fast, flexible and efficient generation of probably unique identifiers (`puid`, aka random strings) of intuitively specified entropy using pre-defined or custom characters, including unicode",
   "main": "build/main/index.js",
   "types": "build/main/index.d.ts",

@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.1 (2025-08-29)
+
+### Build/Release
+
+- Enable npm provenance by publishing from GitHub Actions with OIDC
+- Add release workflow to publish on tag pushes (Yarn install/test, npm publish --provenance)
+- No code changes vs 2.1.0
+
 ## v2.1.0 (2025-08-29)
 
 ### Features
