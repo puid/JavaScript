@@ -1,10 +1,15 @@
 import test, { ExecutionContext } from 'ava'
+import fs from 'node:fs'
+import path from 'node:path'
 
 import { default as puid } from './lib/puid'
 import { dataIds, dataParams, fileBytes } from './lib/util'
 
 // Allow skipping data-driven cross-repo tests in CI or when PUID_SKIP_DATA_TESTS is set
-const it = process.env.PUID_SKIP_DATA_TESTS ? test.skip : test
+// Also skip automatically if the cross-repo data directory is not present
+const dataRoot = path.join(__dirname, '..', '..', 'data')
+const skipData = !!process.env.PUID_SKIP_DATA_TESTS || !!process.env.CI || !!process.env.GITHUB_ACTIONS || !fs.existsSync(dataRoot)
+const it = skipData ? test.skip : test
 
 const testData = (t: ExecutionContext, dataName: string) => {
   const params = dataParams(dataName)
