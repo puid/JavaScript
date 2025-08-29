@@ -34,7 +34,23 @@ jobs:
         env:
           PUID_SKIP_DATA_TESTS: "1"
 
+      - name: Check if version already published
+        id: check_published
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "Version: $VERSION"
+          EXISTS=$(npm view puid-js versions --json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const v=JSON.parse(s); console.log(v.includes(process.env.VERSION)?'yes':'no')})")
+          if [ "$EXISTS" = "yes" ]; then
+            echo "Version $VERSION already on npm; skipping publish"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+      
       - name: Publish to npm (with provenance)
+        if: steps.check_published.outputs.skip != 'true'
         run: npm publish --provenance --tag latest --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
