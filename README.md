@@ -219,10 +219,42 @@ The optional `PuidConfig` object has the following fields:
 - `entropyBytes`: `crypto.randomBytes`
 
 #### `generator` API
-The `puid` generator function includes:
+The `puid` generator function provides:
+- `decode` function that accepts a valid `puid` returns bytes
+- `encode` function that accepts `bytes` and returns the `puid`
 - `info` field that displays generator configuration
 - `risk/1` function that approximates the `risk` of a repeat given a `total` number of IDs
 - `total/1` function that approximates the `total` possible IDs for a given `risk`
+
+- `decode`
+Given a valid `puid`, returns `bytes` sufficient to generate that `puid`.
+Since the actual **bits** for a `puid` may not fall on a byte boundary, the returned `bytes` value
+is zero padded to the right if necessary. The call fails if the provided string arg is not a
+valid puid for the generator.
+
+Example:
+
+```js
+  const { Chars, puid } = require('puid-js')
+
+  const { generator: alphaId } = puid({bits: 64, chars: Chars.Alpha})
+  alphaId.decode('hYrenrGOImyl')
+  // => Uint8Array(9) [133, 138, 222, 158, 177, 142,  34, 108, 165]
+```
+
+- `encode`
+Given sufficient `bytes`, generates a `puid`.
+The provided `bytes` must be sufficient to generate a `puid` for the generator.
+
+Example:
+
+```js
+  const { Chars, puid } = require('puid-js')
+
+  const { generator: alphaId } = puid({bits: 64, chars: Chars.Alpha})
+  alphaId.encode([133, 138, 222, 158, 177, 142,  34, 108, 165])
+  // => 'hYrenrGOImyl'
+```
 
 - `info`
     - `bits`: ID entropy

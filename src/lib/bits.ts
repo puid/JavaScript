@@ -11,7 +11,6 @@ const pow2 = (n: number): number => Math.pow(2, n)
 const isPow2 = (n: number): boolean => pow2(round(log2(n))) === n
 const isBitZero = (n: number, bit: number): boolean => (n & (1 << (bit - 1))) === 0
 
-type AcceptValue = readonly [accept: boolean, shift: number]
 type BitShift = readonly [number, number]
 type BitShifts = readonly BitShift[]
 
@@ -59,6 +58,18 @@ const bitShifts = (chars: string): BitShifts => {
   const shifts = computeBitShifts(chars)
   bitShiftsCache.set(chars, shifts)
   return shifts
+}
+
+const acceptValueFor = (chars: string) => {
+  const nBitsPerChar = bitsPerChar(chars)
+  const nChars = chars.length
+  const shifts = bitShifts(chars)
+  return (value: number): readonly [boolean, number] => {
+    if (value < nChars) return [true, nBitsPerChar]
+    const bitShift = shifts.find((bs) => value <= bs[0])
+    const shift = (bitShift && bitShift[1]) || nBitsPerChar
+    return [false, shift]
+  }
 }
 
 const entropyByBytes = (skipBytes: number, entropyBuffer: ArrayBuffer, sourceBytes: EntropyByBytes) => {
@@ -109,11 +120,9 @@ const fillEntropy = (entropyOffset: number, entropyBuffer: ArrayBuffer, entropyF
     entropyBytes.set(unusedBytes)
 
     // Fill right bytes with new random values
-    if (byValues) {
-      entropyByValues(nUnusedBytes, entropyBuffer, source)
-    } else {
-      entropyByBytes(nUnusedBytes, entropyBuffer, source)
-    }
+    byValues
+      ? entropyByValues(nUnusedBytes, entropyBuffer, source)
+      : entropyByBytes(nUnusedBytes, entropyBuffer, source)
   }
 
   return entropyOffset % 8
@@ -166,21 +175,8 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
   }
 
   // When chars count not a power of 2, sliced bits may yield an invalid value
-
   const nEntropyBits = 8 * entropyBytes.length
-  const puidShifts = bitShifts(puidChars)
-
-  const acceptValue = (value: number): AcceptValue => {
-    // Value is valid if it is less than the number of characters
-    if (value < nChars) {
-      return [true, nBitsPerChar]
-    }
-
-    // For invalid value, shift the minimal bits necessary to determine validity
-    const bitShift = puidShifts.find((bs) => value <= bs[0])
-    const shift = bitShift && bitShift[1]
-    return [false, shift || nBitsPerChar]
-  }
+  const acceptValue = acceptValueFor(puidChars)
 
   // Slice value from entropy bytes
   const sliceValue = () => {
@@ -205,4 +201,4 @@ export default (puidLen: number, puidChars: string, entropyFunction: EntropyFunc
   return () => String.fromCharCode(...mapper.map(() => sliceValue()))
 }
 
-export { bitShifts }
+export { bitShifts, valueAt, bitsPerChar, isPow2, acceptValueFor }

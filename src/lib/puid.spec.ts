@@ -56,9 +56,13 @@ const puidGenerator = (config?: PuidConfig): Puid => {
     ere: -1,
     length: -1
   }
-  cxError.risk = () => -1
-  cxError.total = () => -1
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  cxError.risk = (_total: number) => -1
+  cxError.total = (_risk: number) => -1
+  cxError.encode = (_bytes: Uint8Array) => 'CxError'
+  cxError.decode = (_puid: string) => new Uint8Array()
   return cxError
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 }
 
 test('puid default', (t) => {
@@ -76,6 +80,13 @@ test('puid default', (t) => {
   t.is(ere, 0.75)
   t.is(length, 22)
   t.is(randId().length, length)
+
+  const bytes = new Uint8Array([
+    0xfd, 0xd8, 0xa7, 0x82, 0x8f, 0xac, 0x93, 0x2f, 0xff, 0x0c, 0x83, 0x46, 0x3b, 0xe4, 0x8a, 0x63, 0xf0
+  ])
+  const puid = '_dingo-sky__DINGO-SKY_'
+  t.is(randId.encode(bytes), puid)
+  t.deepEqual(randId.decode(puid), bytes)
 
   t.is(Math.round(randId.risk(1e15)), 10889035741)
   t.is(Math.round(randId.total(1e15)), 3299853896989)

@@ -36,6 +36,8 @@ export type PuidInfo = {
 
 export type Puid = {
   (): string
+  encode: (bytes: Uint8Array) => string
+  decode: (text: string) => Uint8Array
   info: PuidInfo
   risk: (total: number) => number
   total: (risk: number) => number
