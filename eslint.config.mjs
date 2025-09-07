@@ -1,11 +1,13 @@
 import { FlatCompat } from '@eslint/eslintrc'
 import js from '@eslint/js'
-import tsParser from '@typescript-eslint/parser'
 import tsPlugin from '@typescript-eslint/eslint-plugin'
-import importPlugin from 'eslint-plugin-import'
+import tsParser from '@typescript-eslint/parser'
 import eslintComments from 'eslint-plugin-eslint-comments'
 import functionalPlugin from 'eslint-plugin-functional'
+import importPlugin from 'eslint-plugin-import'
 import globals from 'globals'
+import { fileURLToPath } from 'node:url'
+import { dirname } from 'node:path'
 
 const functionalPatched = {
   ...functionalPlugin,
@@ -15,8 +17,11 @@ const functionalPatched = {
   }
 }
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
 const compat = new FlatCompat({
-  baseDirectory: new URL('.', import.meta.url).pathname,
+  baseDirectory: __dirname,
   recommendedConfig: js.configs.recommended
 })
 

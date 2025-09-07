@@ -138,16 +138,20 @@ test('puid generator info includes ETE', (t) => {
   // Test power-of-2 charset
   const safe64Id = puidGenerator({ chars: Chars.Safe64 })
   t.is(safe64Id.info.ete, 1.0, 'Safe64 should have ETE = 1.0')
-  
+
   // Test non-power-of-2 charset
   const alphaNumId = puidGenerator({ chars: Chars.AlphaNum })
-  t.true(alphaNumId.info.ete >= 0.96 && alphaNumId.info.ete <= 0.97, 
-    `AlphaNum should have ETE ~0.966, got ${alphaNumId.info.ete}`)
-  
+  t.true(
+    alphaNumId.info.ete >= 0.96 && alphaNumId.info.ete <= 0.97,
+    `AlphaNum should have ETE ~0.966, got ${alphaNumId.info.ete}`
+  )
+
   const decimalId = puidGenerator({ chars: Chars.Decimal })
-  t.true(decimalId.info.ete >= 0.61 && decimalId.info.ete <= 0.62,
-    `Decimal should have ETE ~0.615, got ${decimalId.info.ete}`)
-  
+  t.true(
+    decimalId.info.ete >= 0.61 && decimalId.info.ete <= 0.62,
+    `Decimal should have ETE ~0.615, got ${decimalId.info.ete}`
+  )
+
   // Test custom charset
   const customId = puidGenerator({ chars: 'dingosky' })
   t.is(customId.info.ete, 1.0, 'Custom 8-char set should have ETE = 1.0')
@@ -562,3 +566,15 @@ test('256 characters', (t) => {
   t.is(c256Id.info.bitsPerChar, 8)
   t.is(c256Id.info.ere, 0.5)
 })
+
+test('crypto source selection', (t) => {
+  // Test that Web Crypto API is used when available (which it should be in Node.js test environment)
+  const randId = puidGenerator()
+  t.truthy(randId)
+  
+  // Verify it can generate IDs (which means crypto source is working)
+  const id = randId()
+  t.truthy(id)
+  t.true(id.length > 0)
+})
+

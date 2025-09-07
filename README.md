@@ -327,106 +327,91 @@ Example: (output is rounded).
 
 There are 19 pre-defined character sets:
 
-| Name           | Characters                                                                                    |
-| :------------- | :-------------------------------------------------------------------------------------------- |
-| Alpha          | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz                                          |
-| AlphaLower     | abcdefghijklmnopqrstuvwxyz                                                                    |
-| AlphaUpper     | ABCDEFGHIJKLMNOPQRSTUVWXYZ                                                                    |
-| AlphaNum       | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789                                |
-| AlphaNumLower  | abcdefghijklmnopqrstuvwxyz0123456789                                                          |
-| AlphaNumUpper  | ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789                                                          |
-| Base16         | 0123456789ABCDEF                                                                              |
-| Base32         | ABCDEFGHIJKLMNOPQRSTUVWXYZ234567                                                              |
-| Base32Hex      | 0123456789abcdefghijklmnopqrstuv                                                              |
-| Base32HexUpper | 0123456789ABCDEFGHIJKLMNOPQRSTUV                                                              |
-| Crockford32    | 0123456789ABCDEFGHJKMNPQRSTVWXYZ                                                              |
-| Decimal        | 0123456789                                                                                    |
-| Hex            | 0123456789abcdef                                                                              |
-| HexUpper       | 0123456789ABCDEF                                                                              |
-| SafeAscii      | !#$%&()\*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^\_abcdefghijklmnopqrstuvwxyz{\|}~ |
-| Safe32         | 2346789bdfghjmnpqrtBDFGHJLMNPQRT                                                              |
-| Safe64         | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-\_                             |
-| Symbol         | !#$%&()\*+,-./:;<=>?@[]^\_{\|}~                                                               |
-| WordSafe32     | 23456789CFGHJMPQRVWXcfghjmpqrvwx                                                              |
+| Name | Count | ERE | ETE | Characters |
+|------|--------|-----|-----|------------|
+| Alpha | 52 | 5.7 | 0.84 | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz |
+| AlphaLower | 26 | 4.7 | 0.81 | abcdefghijklmnopqrstuvwxyz |
+| AlphaUpper | 26 | 4.7 | 0.81 | ABCDEFGHIJKLMNOPQRSTUVWXYZ |
+| AlphaNum | 62 | 5.95 | 0.97 | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 |
+| AlphaNumLower | 36 | 5.17 | 0.65 | abcdefghijklmnopqrstuvwxyz0123456789 |
+| AlphaNumUpper | 36 | 5.17 | 0.65 | ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 |
+| Base16 | 16 | 4.0 | 1.0 | 0123456789ABCDEF |
+| Base32 | 32 | 5.0 | 1.0 | ABCDEFGHIJKLMNOPQRSTUVWXYZ234567 |
+| Base32Hex | 32 | 5.0 | 1.0 | 0123456789abcdefghijklmnopqrstuv |
+| Base32HexUpper | 32 | 5.0 | 1.0 | 0123456789ABCDEFGHIJKLMNOPQRSTUV |
+| Base36 | 36 | 5.17 | 0.65 | 0123456789abcdefghijklmnopqrstuvwxyz |
+| Base36Upper | 36 | 5.17 | 0.65 | 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ |
+| Base45 | 45 | 5.49 | 0.78 | 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%\*+-./: |
+| Base58 | 58 | 5.86 | 0.91 | 123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz |
+| Base62 | 62 | 5.95 | 0.97 | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 |
+| Base85 | 85 | 6.41 | 0.77 | !"#$%&'()\*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ\[\\]^\_\`abcdefghijklmnopqrstu |
+| Bech32 | 32 | 5.0 | 1.0 | 023456789acdefghjklmnpqrstuvwxyz |
+| Boolean | 2 | 1.0 | 1.0 | TF |
+| Crockford32 | 32 | 5.0 | 1.0 | 0123456789ABCDEFGHJKMNPQRSTVWXYZ |
+| Decimal | 10 | 3.32 | 0.62 | 0123456789 |
+| Dna | 4 | 2.0 | 1.0 | ACGT |
+| Geohash | 32 | 5.0 | 1.0 | 0123456789bcdefghjkmnpqrstuvwxyz |
+| Hex | 16 | 4.0 | 1.0 | 0123456789abcdef |
+| HexUpper | 16 | 4.0 | 1.0 | 0123456789ABCDEF |
+| SafeAscii | 90 | 6.49 | 0.8 | !#$%&()\*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ\[\]^\_abcdefghijklmnopqrstuvwxyz{\|}~ |
+| Safe32 | 32 | 5.0 | 1.0 | 2346789bdfghjmnpqrtBDFGHJLMNPQRT |
+| Safe64 | 64 | 6.0 | 1.0 | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-\_ |
+| Symbol | 28 | 4.81 | 0.89 | !#$%&()\*+,-./:;<=>?@\[\]^\_{\|}~ |
+| UrlSafe | 66 | 6.04 | 0.63 | ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.\_~ |
+| WordSafe32 | 32 | 5.0 | 1.0 | 23456789CFGHJMPQRVWXcfghjmpqrvwx |
+| ZBase32 | 32 | 5.0 | 1.0 | ybndrfg8ejkmcpqxot1uwisza345h769 |
 
-Any string of up to 256 unique characters, including unicode, can be used for **`puid`** generation.
+Note: The [Metrics](#metrics) section explains ERE and ETE.
 
-#### Description of non-obvious character sets
+##### Description of non-obvious character sets
 
-| Name           | Description                                                |
-| :------------- | :--------------------------------------------------------- |
-| Base16         | https://datatracker.ietf.org/doc/html/rfc4648#section-8    |
-| Base32         | https://datatracker.ietf.org/doc/html/rfc4648#section-6    |
-| Base32Hex      | Lowercase of Base32HexUpper                                |
-| Base32HexUpper | https://datatracker.ietf.org/doc/html/rfc4648#section-7    |
-| Crockford32    | https://www.crockford.com/base32.html                      |
-| SafeAscii      | Printable ascii that does not require escape in String     |
-| Safe32         | Alpha and numbers picked to reduce chance of English words |
-| Safe64         | https://datatracker.ietf.org/doc/html/rfc4648#section-5    |
-| WordSafe32     | Alpha and numbers picked to reduce chance of English words |
+| Name              | Description                                                |
+| :---------------- | :--------------------------------------------------------- |
+| Base16            | https://datatracker.ietf.org/doc/html/rfc4648#section-8    |
+| Base32            | https://datatracker.ietf.org/doc/html/rfc4648#section-6    |
+| Base32Hex         | Lowercase of Base32HexUpper                             |
+| Base32HexUpper    | https://datatracker.ietf.org/doc/html/rfc4648#section-7    |
+| Base36            | Used by many URL shorteners                                |
+| Base58            | Bitcoin base58 alphabet (excludes 0, O, I, l)              |
+| Base85            | Used in Adobe PostScript and PDF                           |
+| Bech32            | Bitcoin SegWit address encoding                            |
+| Dna               | DNA nucleotide bases (Adenine, Cytosine, Guanine, Thymine) |
+| Ascii85           | Same as SafeAscii                                        |
+| Ascii90           | Same as Base85                                            |
+| Crockford32       | https://www.crockford.com/base32.html                      |
+| Geohash           | Used for encoding geographic coordinates                   |
+| SafeAscii         | Printable ascii that does not require escape in String     |
+| Safe32            | Alpha and numbers picked to reduce chance of English words |
+| Safe64            | https://datatracker.ietf.org/doc/html/rfc4648#section-5    | 
+| UrlSafe           | https://datatracker.ietf.org/doc/html/rfc3986#section-2.3  |
+| WordSafe32        | Alpha and numbers picked to reduce chance of English words |
+| ZBase32           | Zooko's Base32                                             |
 
-Note: Safe32 and WordSafe32 are two different strategies for the same goal.
+#### Custom
 
-#### Character Set Metrics
+Any `String` of up to 256 unique characters can be used for **`puid`** generation, with custom characters optimized in the same manner as the pre-defined character sets. The characters must be unique. This isn't strictly a technical requirement, **PUID** could handle duplicate characters, but the resulting randomness of the IDs is maximal when the characters are unique, so **PUID** enforces that restriction.
 
-`puid-js` provides functions to analyze the efficiency of character sets, particularly their **Entropy Transform Efficiency (ETE)**.
+### Metrics
 
-```js
-const { Chars, charMetrics } = require('puid-js')
+#### Entropy Representation Efficiency
 
-const metrics = charMetrics(Chars.Safe64)
-// => {
-//   avgBits: 6.0,
-//   bitShifts: [[63, 6]],
-//   ere: 0.75,
-//   ete: 1.0
-// }
-```
+Entropy Representation Efficiency (ERE) is a measure of how efficient a string ID represents the entropy of the ID itself. When referring to the entropy of an ID, we mean the Shannon Entropy of the character sequence, and that is maximal when all the permissible characters are equally likely to occur. In most random ID generators, this is the case, and the ERE is solely dependent on the count of characters in the charset, where each character represents **log2(count)** of entropy (a computer specific calc of general Shannon entropy). For example, for a hex charset there are **16** hex characters, so each character "carries" **log2(16) = 4** bits of entropy in the string ID. We say the bits per character is **4** and a random ID of **12** hex characters has **48** bits of entropy.
 
-##### Entropy Transform Efficiency (ETE)
+ERE is measured as a ratio of the bits of entropy for the ID divided by the number of bits require to represent the string (**8** bits per ID character). If each character is equally probably (the most common case), ERE is **(bits-per-char * id_len) / (8 bits * id_len)**, which simplifies to **bits-per-character/8**. The BPC displayed in the Puid Characters table is equivalent to the ERE for that charset.
 
-ETE measures how efficiently random bits are transformed into characters during ID generation. Character sets with a power-of-2 number of characters (16, 32, 64, etc.) have perfect efficiency (ETE = 1.0), meaning no random bits are wasted. Other character sets must occasionally reject bit patterns that would produce invalid indices, resulting in some waste.
+There is, however, a particular random ID exception where each character is _**not**_ equally probable, namely, the often used v4 format of UUIDs. In that format, there are hyphens that carry no entropy (entropy is uncertainty, and there is _**no uncertainly**_ as to where those hyphens will be), one hex digit that is actually constrained to 1 of only 4 hex values and another that is fixed. This formatting results in a ID of 36 characters with a total entropy of 122 bits. The ERE of a v4 UUID is, therefore, **122 / (8 * 36) = 0.4236**.
 
-```js
-const { entropyTransformEfficiency, Chars } = require('puid-js')
+#### Entropy Transform Efficiency
 
-entropyTransformEfficiency(Chars.Safe64)   // => 1.0 (64 chars, perfect)
-entropyTransformEfficiency(Chars.AlphaNum) // => 0.966 (62 chars, ~3.4% waste)
-entropyTransformEfficiency(Chars.Decimal)  // => 0.615 (10 chars, ~38.5% waste)
-```
+Entropy Transform Efficiency (ETE) is a measure of how efficiently source entropy is transformed into random ID entropy. For charsets with a character count that is a power of 2, all of the source entropy bits can be utilized during random ID generation. Each generated ID character requires exactly **log2(count)** bits, so the incoming source entropy can easily be carved into appropriate indices for character selection. Since ETE represents the ratio of output entropy bits to input entropy source, when all of the bits are utilized ETE is **1.0**.
 
-##### Average Bits Per Character
+Even for charsets with power of 2 character count, ETE is only the theoretical maximum of **1.0** _**if**_ the input entropy source is used as described above. Unfortunately, that is not the case with many random ID generation schemes. Some schemes use the entire output of a call to source entropy to create a single index used to select a character. Such schemes have very poor ETE.
 
-The `avgBitsPerChar` function returns the average number of random bits consumed when generating each character, accounting for bit rejection in non-power-of-2 character sets:
+For charsets with a character count that is not a power of 2, some bits will inevitably be discarded since the smallest number of bits required to select a character, **ceil(log2(count))**, will potentially result in an index beyond the character count. A first-cut, naïve approach to this reality is to simply throw away all the bits when the index is too large.
 
-```js
-const { avgBitsPerChar, Chars } = require('puid-js')
+However, a more sophisticated scheme of bit slicing can actually improve on the naïve approach. Puid extends the bit slicing scheme by adding a bit shifting scheme to the algorithm, wherein a _**minimum**_ number of bits in the "over the limit" bits are discarded by observing that some bit patterns of length less than **ceil(log2(count))** already guarantee the bits will be over the limit, and _**only**_ those bits need be discarded. 
 
-avgBitsPerChar(Chars.Safe64)   // => 6.0 (uses exactly 6 bits per char)
-avgBitsPerChar(Chars.AlphaNum) // => 6.16 (uses ~6.16 bits due to rejection)
-avgBitsPerChar(Chars.Decimal)  // => 5.4 (uses ~5.4 bits due to rejection)
-```
-
-##### Complete Metrics
-
-The `charMetrics` function returns comprehensive metrics for a character set:
-
-```js
-const { charMetrics, Chars } = require('puid-js')
-
-const metrics = charMetrics(Chars.AlphaNum)
-// => {
-//   avgBits: 6.1613,        // Average bits consumed per character
-//   bitShifts: [[61,6],[63,5]], // Bit shift rules for generation
-//   ere: 0.7443,            // Entropy representation efficiency
-//   ete: 0.9664             // Entropy transform efficiency
-// }
-```
-
-These metrics help you understand the trade-offs between different character sets:
-- Power-of-2 sets (16, 32, 64 chars) have perfect efficiency but limited choice
-- Sets close to powers of 2 (like 62-char AlphaNum) have good efficiency
-- Small sets (like 10-char Decimal) have lower efficiency but may be required for specific use cases
+As example, using the **AlphaNumLower** charset, which has 36 characters, **ceil(log2(36)) = 6** bits are required to create a suitable index. However, if those bits start with the bit pattern **11xxxx**, the index would be out of bounds regardless of the **xxxx** bits, so Puid only tosses the first two bits and keeps the trailing four bits for use in the next index. (It is beyond scope to discuss here, but analysis shows this bit shifting scheme does not alter the random characteristics of generated IDs). So whereas the naïve approach would have an ETE of **0.485**, Puid achieves an ETE of **0.646**, a **33%** improvement. The `bench/alphanum_lower_ete.exs` script has detailed analysis.
 
 [TOC](#TOC)
 
@@ -633,7 +618,7 @@ Hmmm. Looks like there are 500,000 IDs expected and the repeat risk is 1 in a tr
 ```js
   const { Chars, puid } = require('puid-js')
 
-  const { generator: randId } = puid(chars:Chars.SAFE32, total:10e6, risk: 1e15)
+  const { generator: randId } = puid({ chars: Chars.Safe32, total: 10e6, risk: 1e15 })
   randId()
   // => 'tp9TJPNM2rmMLN22prFf'
 ```

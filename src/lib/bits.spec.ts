@@ -1,6 +1,6 @@
 import test from 'ava'
 
-import { bitShifts } from './bits'
+import { acceptValueFor, bitShifts } from './bits'
 import { Chars } from './chars'
 
 test('chars: dingosky', (t) => t.deepEqual(bitShifts('dingosky'), [[7, 3]]))
@@ -52,3 +52,25 @@ test('Chars.SafeAscii', (t) =>
   ]))
 
 test('Chars.Safe32', (t) => t.deepEqual(bitShifts(Chars.Safe32), [[31, 5]]))
+
+test('acceptValueFor accept/reject shifts', (t) => {
+  // Power-of-2 charset: always accept with full nBitsPerChar
+  const acceptHex = acceptValueFor(Chars.Hex) // 16 chars, 4 bits
+  let r = acceptHex(5)
+  t.deepEqual(r, [true, 4])
+  r = acceptHex(15)
+  t.deepEqual(r, [true, 4])
+
+  // Non-power-of-2 charset: verify reject paths choose minimal shift
+  const acceptAlphaNumLower = acceptValueFor(Chars.AlphaNumLower) // 36 chars, 6 bits
+  // Accept path
+  let a = acceptAlphaNumLower(35)
+  t.deepEqual(a, [true, 6])
+  // Reject paths (see expected shifts [[35,6],[39,4],[47,3],[63,2]])
+  a = acceptAlphaNumLower(36)
+  t.deepEqual(a, [false, 4])
+  a = acceptAlphaNumLower(40)
+  t.deepEqual(a, [false, 3])
+  a = acceptAlphaNumLower(63)
+  t.deepEqual(a, [false, 2])
+})

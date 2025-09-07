@@ -66,12 +66,9 @@ const acceptValueFor = (chars: string) => {
   const shifts = bitShifts(chars)
   return (value: number): readonly [boolean, number] => {
     if (value < nChars) return [true, nBitsPerChar]
-    const bitShift = shifts.find((bs) => value <= bs[0])
-    const shift = (bitShift && bitShift[1]) || nBitsPerChar
-    return [false, shift]
+    return [false, (shifts.find((bs) => value <= bs[0]) as [number, number])[1]]
   }
 }
-
 const entropyByBytes = (skipBytes: number, entropyBuffer: ArrayBuffer, sourceBytes: EntropyByBytes) => {
   const entropyBytes = new Uint8Array(entropyBuffer)
   const bytesLen = entropyBytes.length

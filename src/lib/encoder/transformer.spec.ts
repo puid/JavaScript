@@ -40,3 +40,23 @@ test('encode/decode Safe64', (t) => {
   t.is(encode(Chars.Safe64, bytes), puid)
   t.deepEqual(decode(Chars.Safe64, puid), bytes)
 })
+
+// Edge cases for transformer encode/decode
+
+test('encode empty returns empty string', (t) => {
+  t.is(encode(Chars.Alpha, new Uint8Array(0)), '')
+})
+
+test('decode empty returns empty bytes', (t) => {
+  t.deepEqual(decode(Chars.Alpha, ''), new Uint8Array(0))
+})
+
+test('decode invalid character throws', (t) => {
+  const err = t.throws(() => decode(Chars.Hex, 'G'))
+  t.is(err?.message, 'Invalid character for charset')
+})
+
+test('decode pads final partial byte', (t) => {
+  // Base32 uses 5 bits/char; single 'A' (index 0) pads to one zero byte
+  t.deepEqual(decode(Chars.Base32, 'A'), new Uint8Array([0]))
+})

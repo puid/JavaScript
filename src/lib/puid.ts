@@ -1,10 +1,9 @@
-import { randomBytes } from 'node:crypto'
 
 import { EntropyFunction, Puid, PuidConfig, PuidResult } from '../types/puid'
 
 import muncher from './bits'
-import { byteLength } from './byteLength'
-import { Chars, charsName, validChars, entropyTransformEfficiency } from './chars'
+import { byteLength } from './chars'
+import { Chars, charsName, metrics, validChars } from './chars'
 import { decode, encode } from './encoder/transformer'
 import { entropyBits, entropyBitsPerChar, entropyRisk, entropyTotal } from './entropy'
 
@@ -16,14 +15,13 @@ const selectEntropyFunction = (puidConfig: PuidConfig): EntropyFunction => {
   if (puidConfig.entropyValues) return { byValues: true, source: puidConfig.entropyValues }
   if (puidConfig.entropyBytes) return { byValues: false, source: puidConfig.entropyBytes }
 
-  // Prefer Web Crypto in environments where it's available
+  // Use Web Crypto API
   type CryptoLike = { getRandomValues?: (b: Uint8Array) => void }
   const cryptoObj = (globalThis as { crypto?: CryptoLike }).crypto
   const gv = cryptoObj?.getRandomValues?.bind(cryptoObj) as ((b: Uint8Array) => void) | undefined
   if (gv) return { byValues: true, source: gv }
 
-  // Fallback to Node's randomBytes
-  return { byValues: false, source: randomBytes }
+  throw new Error('Web Crypto API not available')
 }
 
 /**
@@ -97,7 +95,7 @@ export default (puidConfig: PuidConfig = {}): PuidResult => {
   const puidBitsPerChar = entropyBitsPerChar(puidChars)
   const puidLen = round(ceil(puidEntropyBits / puidBitsPerChar))
   const ere = (puidBitsPerChar * puidChars.length) / (8 * byteLength(puidChars))
-  const ete = entropyTransformEfficiency(puidChars)
+  const ete = metrics(puidChars).ete
 
   const bitsMuncher = muncher(puidLen, puidChars, selectEntropyFunction(puidConfig))
 

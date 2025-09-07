@@ -38,8 +38,13 @@ jobs:
       - name: Node ESM import smoke
         run: node scripts/ci/esm-smoke.mjs
 
-      - name: Test
-        run: yarn test:unit
+      - name: Test with coverage
+        run: yarn test:unit && yarn cov:check
+
+      - name: Upload coverage
+        run: yarn cov:send
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   esm-example:
     name: esm example (ubuntu)
