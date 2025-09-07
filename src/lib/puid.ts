@@ -4,7 +4,7 @@ import { EntropyFunction, Puid, PuidConfig, PuidResult } from '../types/puid'
 
 import muncher from './bits'
 import { byteLength } from './byteLength'
-import { Chars, charsName, validChars } from './chars'
+import { Chars, charsName, validChars, entropyTransformEfficiency } from './chars'
 import { decode, encode } from './encoder/transformer'
 import { entropyBits, entropyBitsPerChar, entropyRisk, entropyTotal } from './entropy'
 
@@ -97,6 +97,7 @@ export default (puidConfig: PuidConfig = {}): PuidResult => {
   const puidBitsPerChar = entropyBitsPerChar(puidChars)
   const puidLen = round(ceil(puidEntropyBits / puidBitsPerChar))
   const ere = (puidBitsPerChar * puidChars.length) / (8 * byteLength(puidChars))
+  const ete = entropyTransformEfficiency(puidChars)
 
   const bitsMuncher = muncher(puidLen, puidChars, selectEntropyFunction(puidConfig))
 
@@ -111,6 +112,7 @@ export default (puidConfig: PuidConfig = {}): PuidResult => {
     chars: puidChars,
     charsName: charsName(puidChars),
     ere: round2(ere),
+    ete: round2(ete),
     length: puidLen
   })
 

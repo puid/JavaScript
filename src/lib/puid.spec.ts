@@ -54,6 +54,7 @@ const puidGenerator = (config?: PuidConfig): Puid => {
     chars: 'CxError',
     charsName: 'CxError',
     ere: -1,
+    ete: -1,
     length: -1
   }
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -71,13 +72,14 @@ test('puid default', (t) => {
   const info = randId.info
   t.truthy(info)
 
-  const { bits, bitsPerChar, chars, charsName, ere, length } = info
+  const { bits, bitsPerChar, chars, charsName, ere, ete, length } = info
 
   t.is(bits, 132)
   t.is(bitsPerChar, 6)
   t.is(chars, Chars.Safe64)
   t.is(charsName, 'safe64')
   t.is(ere, 0.75)
+  t.is(ete, 1.0)
   t.is(length, 22)
   t.is(randId().length, length)
 
@@ -100,11 +102,12 @@ test('puid total/risk', (t) => {
   const info = alphaId.info
   t.truthy(info)
 
-  const { bits, bitsPerChar, chars, charsName, ere, length } = info
+  const { bits, bitsPerChar, chars, charsName, ere, ete, length } = info
   t.is(bits, 68.41)
   t.is(bitsPerChar, 5.7)
   t.is(charsName, 'alpha')
   t.is(ere, 0.71)
+  t.is(ete, 0.84)
   t.is(length, 12)
 
   const idBits = entropyBitsPerChar(chars) * length
@@ -129,6 +132,25 @@ test('Chars bits', (t) => {
 test('puid bits', (t) => {
   const randId = puidGenerator({ bits: 64 })
   t.is(randId.info.bits, 66)
+})
+
+test('puid generator info includes ETE', (t) => {
+  // Test power-of-2 charset
+  const safe64Id = puidGenerator({ chars: Chars.Safe64 })
+  t.is(safe64Id.info.ete, 1.0, 'Safe64 should have ETE = 1.0')
+  
+  // Test non-power-of-2 charset
+  const alphaNumId = puidGenerator({ chars: Chars.AlphaNum })
+  t.true(alphaNumId.info.ete >= 0.96 && alphaNumId.info.ete <= 0.97, 
+    `AlphaNum should have ETE ~0.966, got ${alphaNumId.info.ete}`)
+  
+  const decimalId = puidGenerator({ chars: Chars.Decimal })
+  t.true(decimalId.info.ete >= 0.61 && decimalId.info.ete <= 0.62,
+    `Decimal should have ETE ~0.615, got ${decimalId.info.ete}`)
+  
+  // Test custom charset
+  const customId = puidGenerator({ chars: 'dingosky' })
+  t.is(customId.info.ete, 1.0, 'Custom 8-char set should have ETE = 1.0')
 })
 
 test('Chars count power of 2 with no carry', (t) => {

@@ -31,6 +31,7 @@ export type PuidInfo = {
   readonly chars: string
   readonly charsName: string
   readonly ere: number
+  readonly ete: number
   readonly length: number
 }
 

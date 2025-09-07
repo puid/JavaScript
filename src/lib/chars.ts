@@ -1,5 +1,10 @@
 import { ValidChars } from '../types/puid'
 
+import { bitShifts, isPow2 } from './bits'
+import { entropyBitsPerChar } from './entropy'
+
+const { ceil, log2, pow } = Math
+
 /**
  * Pre-defined character sets
  */
@@ -114,4 +119,210 @@ export const validChars = (chars: string): ValidChars => {
   }, ok)
 
   return charsCheck === ok ? [true, ''] : [false, charsCheck]
+}
+
+/**
+ * Metrics for a character set including entropy transform efficiency
+ */
+export interface CharMetrics {
+  /** Average bits consumed per character */
+  avgBits: number
+  /** Bit shift rules used for character generation */
+  bitShifts: ReadonlyArray<readonly [number, number]>
+  /** Entropy representation efficiency (0 < ERE ≤ 1.0) */
+  ere: number
+  /** Entropy transform efficiency (0 < ETE ≤ 1.0) */
+  ete: number
+}
+
+/**
+ * Calculate the total bits consumed when rejecting values
+ * @param charsetSize - Number of characters in the set
+ * @param totalValues - Total possible values for the bit width (2^bitsPerChar)
+ * @param shifts - Bit shift rules
+ * @returns Total bits consumed on reject
+ */
+const bitsConsumedOnReject = (
+  charsetSize: number,
+  totalValues: number,
+  shifts: ReadonlyArray<readonly [number, number]>
+): number => {
+  let sum = 0
+  for (let value = charsetSize; value < totalValues; value++) {
+    const bitShift = shifts.find((bs) => value <= bs[0])
+    const bitsConsumed = bitShift ? bitShift[1] : ceil(log2(charsetSize))
+    sum += bitsConsumed
+  }
+  return sum
+}
+
+/**
+ * Calculate average byte size per character for a string
+ * @param chars - Character string
+ * @returns Average bytes per character
+ */
+const avgBytesPerChar = (chars: string): number => {
+  const encoder = new TextEncoder()
+  const totalBytes = encoder.encode(chars).length
+  return totalBytes / chars.length
+}
+
+/**
+ * Calculate entropy metrics for a character set.
+ *
+ * Returns a metrics object with the following properties:
+ * - `avgBits`: Average bits consumed per character during generation
+ * - `bitShifts`: Bit shift rules used for character generation
+ * - `ere`: Entropy representation efficiency (0 < ERE ≤ 1.0), measures how efficiently 
+ *   the characters represent entropy in their string form
+ * - `ete`: Entropy transform efficiency (0 < ETE ≤ 1.0), measures how efficiently 
+ *   random bits are transformed into characters during generation
+ *
+ * ### Example (es module)
+ * ```js
+ * import { charMetrics, Chars } from 'puid-js'
+ *
+ * charMetrics(Chars.Safe64)
+ * // => {
+ * //   avgBits: 6.0,
+ * //   bitShifts: [[63, 6]],
+ * //   ere: 0.75,
+ * //   ete: 1.0
+ * // }
+ *
+ * charMetrics(Chars.Alpha)
+ * // => {
+ * //   avgBits: 6.769230769230769,
+ * //   bitShifts: [[51, 6], [55, 4], [63, 3]],
+ * //   ere: 0.7125549647676365,
+ * //   ete: 0.8421104129072068
+ * // }
+ * ```
+ *
+ * ### Example (commonjs)
+ * ```js
+ * const { charMetrics, Chars } = require('puid-js')
+ *
+ * charMetrics(Chars.AlphaNum)
+ * // => {
+ * //   avgBits: 6.646793002915452,
+ * //   bitShifts: [[61, 6], [63, 5]],
+ * //   ere: 0.7440244996982898,
+ * //   ete: 0.8957009989667183
+ * // }
+ * ```
+ *
+ * @param chars - string of valid characters
+ * @returns Metrics object containing efficiency measurements
+ */
+export const charMetrics = (chars: string): CharMetrics => {
+  const charsetSize = chars.length
+  const bitsPerChar = ceil(entropyBitsPerChar(chars))
+  const theoreticalBits = log2(charsetSize)
+  const shifts = bitShifts(chars)
+  
+  // Calculate ERE (Entropy Representation Efficiency)
+  // This measures how efficiently characters represent entropy in string form
+  const avgRepBitsPerChar = avgBytesPerChar(chars) * 8
+  const ere = theoreticalBits / avgRepBitsPerChar
+  
+  if (isPow2(charsetSize)) {
+    // Power-of-2 charsets have perfect efficiency
+    return {
+      avgBits: bitsPerChar,
+      bitShifts: shifts,
+      ere,
+      ete: 1.0
+    }
+  }
+  
+  // For non-power-of-2 charsets, calculate ETE
+  const totalValues = pow(2, bitsPerChar)
+  const probAccept = charsetSize / totalValues
+  const probReject = 1 - probAccept
+  
+  const rejectCount = totalValues - charsetSize
+  const rejectBits = bitsConsumedOnReject(charsetSize, totalValues, shifts)
+  
+  const avgBitsOnReject = rejectBits / rejectCount
+  const avgBits = bitsPerChar + (probReject / probAccept) * avgBitsOnReject
+  
+  const ete = theoreticalBits / avgBits
+  
+  return {
+    avgBits,
+    bitShifts: shifts,
+    ere,
+    ete
+  }
+}
+
+/**
+ * Get the entropy transform efficiency for a character set.
+ * 
+ * ETE measures how efficiently random bits are transformed into characters during generation.
+ * Character sets with a power-of-2 number of characters have ETE = 1.0 since bit slicing 
+ * always creates a proper index into the characters list. Other character sets discard 
+ * some bits due to bit slicing that creates an out-of-bounds index.
+ *
+ * ### Example (es module)
+ * ```js
+ * import { entropyTransformEfficiency, Chars } from 'puid-js'
+ *
+ * entropyTransformEfficiency(Chars.Safe64)
+ * // => 1.0
+ *
+ * entropyTransformEfficiency(Chars.AlphaNum)
+ * // => 0.8957009989667183
+ * ```
+ *
+ * ### Example (commonjs)
+ * ```js
+ * const { entropyTransformEfficiency } = require('puid-js')
+ *
+ * entropyTransformEfficiency('dingosky')
+ * // => 1.0
+ *
+ * entropyTransformEfficiency('0123456789')
+ * // => 0.8320556406145288
+ * ```
+ *
+ * @param chars - string of valid characters
+ * @returns Entropy transform efficiency (0 < ETE ≤ 1.0)
+ */
+export const entropyTransformEfficiency = (chars: string): number => {
+  return charMetrics(chars).ete
+}
+
+/**
+ * Get the average bits consumed per character for a character set.
+ * 
+ * This represents the theoretical average number of random bits consumed
+ * when generating each character, accounting for bit rejection in 
+ * non-power-of-2 character sets.
+ *
+ * ### Example (es module)
+ * ```js
+ * import { avgBitsPerChar, Chars } from 'puid-js'
+ *
+ * avgBitsPerChar(Chars.Safe64)
+ * // => 6.0
+ *
+ * avgBitsPerChar(Chars.AlphaNum)
+ * // => 6.646793002915452
+ * ```
+ *
+ * ### Example (commonjs)
+ * ```js
+ * const { avgBitsPerChar } = require('puid-js')
+ *
+ * avgBitsPerChar('0123456789')
+ * // => 3.9886587605023494
+ * ```
+ *
+ * @param chars - string of valid characters
+ * @returns Average bits consumed per character
+ */
+export const avgBitsPerChar = (chars: string): number => {
+  return charMetrics(chars).avgBits
 }

@@ -262,6 +262,7 @@ Example:
     - `chars`: Source characters 
     - `charsName`: Name of pre-defined `Chars` or `custom`
     - `ere`: Entropy representation efficiency
+    - `ete`: Entropy transform efficiency
     - `length`: ID string length
 
 Example:
@@ -281,6 +282,7 @@ Example:
       chars: '234567ABCDEFGHIJKLMNOPQRSTUVWXYZ',
       charsName: 'base32',
       ere: 0.63,
+      ete: 1.0,
       length: 16
     }
 ```
@@ -364,6 +366,67 @@ Any string of up to 256 unique characters, including unicode, can be used for **
 | WordSafe32     | Alpha and numbers picked to reduce chance of English words |
 
 Note: Safe32 and WordSafe32 are two different strategies for the same goal.
+
+#### Character Set Metrics
+
+`puid-js` provides functions to analyze the efficiency of character sets, particularly their **Entropy Transform Efficiency (ETE)**.
+
+```js
+const { Chars, charMetrics } = require('puid-js')
+
+const metrics = charMetrics(Chars.Safe64)
+// => {
+//   avgBits: 6.0,
+//   bitShifts: [[63, 6]],
+//   ere: 0.75,
+//   ete: 1.0
+// }
+```
+
+##### Entropy Transform Efficiency (ETE)
+
+ETE measures how efficiently random bits are transformed into characters during ID generation. Character sets with a power-of-2 number of characters (16, 32, 64, etc.) have perfect efficiency (ETE = 1.0), meaning no random bits are wasted. Other character sets must occasionally reject bit patterns that would produce invalid indices, resulting in some waste.
+
+```js
+const { entropyTransformEfficiency, Chars } = require('puid-js')
+
+entropyTransformEfficiency(Chars.Safe64)   // => 1.0 (64 chars, perfect)
+entropyTransformEfficiency(Chars.AlphaNum) // => 0.966 (62 chars, ~3.4% waste)
+entropyTransformEfficiency(Chars.Decimal)  // => 0.615 (10 chars, ~38.5% waste)
+```
+
+##### Average Bits Per Character
+
+The `avgBitsPerChar` function returns the average number of random bits consumed when generating each character, accounting for bit rejection in non-power-of-2 character sets:
+
+```js
+const { avgBitsPerChar, Chars } = require('puid-js')
+
+avgBitsPerChar(Chars.Safe64)   // => 6.0 (uses exactly 6 bits per char)
+avgBitsPerChar(Chars.AlphaNum) // => 6.16 (uses ~6.16 bits due to rejection)
+avgBitsPerChar(Chars.Decimal)  // => 5.4 (uses ~5.4 bits due to rejection)
+```
+
+##### Complete Metrics
+
+The `charMetrics` function returns comprehensive metrics for a character set:
+
+```js
+const { charMetrics, Chars } = require('puid-js')
+
+const metrics = charMetrics(Chars.AlphaNum)
+// => {
+//   avgBits: 6.1613,        // Average bits consumed per character
+//   bitShifts: [[61,6],[63,5]], // Bit shift rules for generation
+//   ere: 0.7443,            // Entropy representation efficiency
+//   ete: 0.9664             // Entropy transform efficiency
+// }
+```
+
+These metrics help you understand the trade-offs between different character sets:
+- Power-of-2 sets (16, 32, 64 chars) have perfect efficiency but limited choice
+- Sets close to powers of 2 (like 62-char AlphaNum) have good efficiency
+- Small sets (like 10-char Decimal) have lower efficiency but may be required for specific use cases
 
 [TOC](#TOC)
 
