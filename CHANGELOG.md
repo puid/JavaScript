@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.2.0 (2025-09-07)
+
+### Added
+
+- Add `ete` function for entropy transform effeciency calc
+- Add numerous character sets
+
+### Notes
+
+- No runtime/library code changes in this release
+
 ## v2.1.1 (2025-08-29)
 
 ### Build/Release
